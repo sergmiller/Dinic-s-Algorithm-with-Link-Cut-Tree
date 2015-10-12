@@ -16,7 +16,20 @@ Node::Node(int key) {
     this->leftChild = nullptr;
     this->rightChild = nullptr;
     this->parent = nullptr;
+    this->treePtr = nullptr;
+    this->link = nullptr;
+    this->reverseFlag = false;
 }
+/*
+Node::Node() {
+    this->key = 0;
+    this->sizeOfSubtree = 1;
+    this->leftChild = nullptr;
+    this->rightChild = nullptr;
+    this->parent = nullptr;
+    this->treePtr = nullptr;
+    this->reverseFlag = false;
+}*/
 
 void Node::recursiveDelete() {
     if(leftChild) {
@@ -27,16 +40,39 @@ void Node::recursiveDelete() {
         rightChild->recursiveDelete();
     }
     
-    delete this;
+    this->~Node();
 }
 
 SplayTree::SplayTree(Node* root) {
     this->root = root;
+    if(root) {
+        root->treePtr = this;
+    }
 }
 
 SplayTree::~SplayTree() {
     if(root) {
         root->recursiveDelete();
+    }
+}
+
+void Node::push() {
+    if(reverseFlag) { //guarantee that this != nullptr
+        std::swap(leftChild, rightChild);
+        reverseFlag = false;
+        
+        reverse(leftChild);
+        reverse(rightChild);
+    }
+}
+
+void Node::reverse() {
+    reverse(this);
+}
+
+void Node::reverse(Node* vertex) {
+    if(vertex) {
+        vertex->reverseFlag ^= true;
     }
 }
 
@@ -48,8 +84,7 @@ void SplayTree::setParent(Node* vertex, Node* parent) {
 
 void SplayTree::updateTreeSize(Node* vertex) {
     if(vertex) {
-        vertex->sizeOfSubtree = (vertex->leftChild ? vertex->leftChild->sizeOfSubtree : 0) +
-        (vertex->rightChild ? vertex->rightChild->sizeOfSubtree : 0) + 1;
+        vertex->sizeOfSubtree = size(vertex->leftChild) + size(vertex->rightChild) + 1;
     }
 }
 
@@ -90,6 +125,7 @@ void SplayTree::rotate(Node* parent, Node* vertex) {
 void SplayTree::splay(Node* vertex){
     if(!vertex->parent) {
         root = vertex;
+        vertex->treePtr = this;
         return;
     }
     
@@ -99,6 +135,8 @@ void SplayTree::splay(Node* vertex){
     if(!grandParent) {
         rotate(parent, vertex);
         root = vertex;
+        //setParent(vertex, nullptr);
+        vertex->treePtr = this;
         return;
     }
     
@@ -128,6 +166,8 @@ Node* SplayTree::find(size_t position) {
 
 Node* SplayTree::find(size_t position, Node* vertex) {
     size_t indexLeft = (vertex->leftChild ? vertex->leftChild->sizeOfSubtree : 0);
+    
+    vertex->push();
     
     if(position == indexLeft) {
         splay(vertex);
@@ -200,13 +240,13 @@ void SplayTree::merge(SplayTree* addedTree) {
         return;
     }
     
-    find(root->sizeOfSubtree - 1);
+    find(this->root->sizeOfSubtree - 1);
     addedTree->find(0);
     
-    root->rightChild = addedTree->root;
+    this->root->rightChild = addedTree->root;
     addedTree->root = nullptr;
-    keepParent(root);
-    updateTreeSize(root);
+    keepParent(this->root);
+    updateTreeSize(this->root);
 }
 
 void SplayTree::remove(size_t position) {
@@ -233,4 +273,7 @@ void SplayTree::remove(size_t position) {
     rightTree->~SplayTree();
 }
 
+size_t size(Node* vertex) {
+    return (vertex ? vertex->sizeOfSubtree : 0);
+}
 

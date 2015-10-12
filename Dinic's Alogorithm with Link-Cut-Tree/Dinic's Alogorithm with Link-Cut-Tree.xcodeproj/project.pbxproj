@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B912CFC71BCB25DC004B9F5A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B912CFC61BCB25DC004B9F5A /* main.cpp */; };
 		B912CFCF1BCB267A004B9F5A /* splaytree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B912CFCE1BCB267A004B9F5A /* splaytree.cpp */; settings = {ASSET_TAGS = (); }; };
+		B912CFD21BCB2B25004B9F5A /* linkcuttree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		B912CFC61BCB25DC004B9F5A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B912CFCD1BCB264D004B9F5A /* splaytree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = splaytree.h; sourceTree = "<group>"; };
 		B912CFCE1BCB267A004B9F5A /* splaytree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = splaytree.cpp; sourceTree = "<group>"; };
+		B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linkcuttree.cpp; sourceTree = "<group>"; };
+		B912CFD11BCB2B25004B9F5A /* linkcuttree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linkcuttree.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +66,8 @@
 				B912CFC61BCB25DC004B9F5A /* main.cpp */,
 				B912CFCD1BCB264D004B9F5A /* splaytree.h */,
 				B912CFCE1BCB267A004B9F5A /* splaytree.cpp */,
+				B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */,
+				B912CFD11BCB2B25004B9F5A /* linkcuttree.h */,
 			);
 			path = "Dinic's Alogorithm with Link-Cut-Tree";
 			sourceTree = "<group>";
@@ -123,6 +128,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B912CFD21BCB2B25004B9F5A /* linkcuttree.cpp in Sources */,
 				B912CFC71BCB25DC004B9F5A /* main.cpp in Sources */,
 				B912CFCF1BCB267A004B9F5A /* splaytree.cpp in Sources */,
 			);
@@ -241,6 +247,7 @@
 				B912CFCC1BCB25DC004B9F5A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

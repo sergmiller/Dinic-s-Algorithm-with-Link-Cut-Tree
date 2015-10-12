@@ -11,17 +11,28 @@
 
 #include <cstdio>
 
+class Node;
+class SplayTree;
+
+size_t size(Node* vertex);
+
 class Node{
 public:
     Node(int key);
     
     int key;
     int edgeWeight;
+    bool reverseFlag;
     Node* leftChild;
     Node* rightChild;
     Node* parent;
+    Node* link;
     size_t sizeOfSubtree;
-    
+    SplayTree* treePtr;
+
+    void reverse();
+    void reverse(Node* vertex);
+    void push();
     void recursiveDelete();
 };
 
@@ -30,6 +41,9 @@ class SplayTree
 private:
     Node* find(size_t position, Node* vertex);
     void updateTreeSize(Node* vertex);
+    void keepParent(Node* vertex);
+    void setParent(Node* parent, Node* vertex);
+    void rotate(Node* parent, Node* vertex);
     Node* root;
 public:
     SplayTree(Node* root);
@@ -37,18 +51,11 @@ public:
     
     void insert(int key, size_t position);
     void remove(size_t position);
-    /*added tree is right merged tree*/
-    void merge(SplayTree* addedTree);
-    /*returned tree is tight splited tree*/
-    SplayTree* split(size_t position);
+    void merge(SplayTree* addedTree); //added tree is right merged tree
+    SplayTree* split(size_t position); //returned tree is tight splited tree
     Node* find(size_t position);
     
     void splay(Node* vertex);
-    
-    void keepParent(Node* vertex);
-    void setParent(Node* parent, Node* vertex);
-    
-    void rotate(Node* parent, Node* vertex);
     
     Node* getRoot() { return root; };
 };
