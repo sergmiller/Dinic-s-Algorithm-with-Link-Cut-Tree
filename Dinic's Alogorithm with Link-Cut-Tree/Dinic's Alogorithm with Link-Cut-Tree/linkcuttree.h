@@ -24,9 +24,9 @@ private:
     Node* cutout(Node* vertex);
     Node* cleanUp(Node* vertex);
     Node* findRoot(Node* vertex);
-
+    Node* getLca(Node* vertex1, Node* vertex2);
 public:
-   // LinkCutTree(std::vector<SplayTree>* trees);
+    // LinkCutTree(std::vector<SplayTree>* trees);
     ~LinkCutTree();
     void makeTree(Node* vertex);
     void revert(Node* vertex);
@@ -34,6 +34,8 @@ public:
     void link(Node* treeRoot, Node* vertex);
     void linkEdge(Node* vertex1, Node* vertex2);
     void cutEdge(Node* vertex1, Node* vertex2);
+    size_t getDist(Node* vertex1, Node* vertex2);
+    Node* lca(Node* vertex1, Node* vertex2);
     size_t dist(Node* vertex1, Node* vertex2);
     size_t depth(Node* vertex);
     

@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <vector>
 
-Node::Node(int key) {
+Node::Node(int key, size_t weight) {
     this->key = key;
     this->sizeOfSubtree = 1;
     this->leftChild = nullptr;
@@ -19,17 +19,19 @@ Node::Node(int key) {
     this->treePtr = nullptr;
     this->link = nullptr;
     this->reverseFlag = false;
+    this->edgeWeight = weight;
+    this->subtreeWeight = weight;
 }
 /*
-Node::Node() {
-    this->key = 0;
-    this->sizeOfSubtree = 1;
-    this->leftChild = nullptr;
-    this->rightChild = nullptr;
-    this->parent = nullptr;
-    this->treePtr = nullptr;
-    this->reverseFlag = false;
-}*/
+ Node::Node() {
+ this->key = 0;
+ this->sizeOfSubtree = 1;
+ this->leftChild = nullptr;
+ this->rightChild = nullptr;
+ this->parent = nullptr;
+ this->treePtr = nullptr;
+ this->reverseFlag = false;
+ }*/
 
 void Node::recursiveDelete() {
     if(leftChild) {
@@ -85,6 +87,7 @@ void SplayTree::setParent(Node* vertex, Node* parent) {
 void SplayTree::updateTreeSize(Node* vertex) {
     if(vertex) {
         vertex->sizeOfSubtree = size(vertex->leftChild) + size(vertex->rightChild) + 1;
+        vertex->subtreeWeight = weight(vertex->leftChild) + weight(vertex->rightChild) + vertex->edgeWeight;
     }
 }
 
@@ -165,10 +168,8 @@ Node* SplayTree::find(size_t position) {
 }
 
 Node* SplayTree::find(size_t position, Node* vertex) {
-    size_t indexLeft = (vertex->leftChild ? vertex->leftChild->sizeOfSubtree : 0);
-    
     vertex->push();
-    
+    size_t indexLeft = (vertex->leftChild ? vertex->leftChild->sizeOfSubtree : 0);
     if(position == indexLeft) {
         splay(vertex);
         return vertex;
@@ -277,3 +278,6 @@ size_t size(Node* vertex) {
     return (vertex ? vertex->sizeOfSubtree : 0);
 }
 
+size_t weight(Node* vertex) {
+    return (vertex ? vertex->subtreeWeight : 0);
+}

@@ -15,13 +15,15 @@ class Node;
 class SplayTree;
 
 size_t size(Node* vertex);
+size_t weight(Node* vertex);
 
 class Node{
 public:
-    Node(int key);
+    Node(int key, size_t weight = 0);
     
     int key;
-    int edgeWeight;
+    size_t edgeWeight;
+    size_t subtreeWeight;
     bool reverseFlag;
     Node* leftChild;
     Node* rightChild;
@@ -29,7 +31,7 @@ public:
     Node* link;
     size_t sizeOfSubtree;
     SplayTree* treePtr;
-
+    
     void reverse();
     void reverse(Node* vertex);
     void push();

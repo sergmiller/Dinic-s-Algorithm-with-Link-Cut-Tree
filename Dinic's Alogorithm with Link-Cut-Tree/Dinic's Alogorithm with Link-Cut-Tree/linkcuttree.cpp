@@ -8,18 +8,17 @@
 
 #include "linkcuttree.h"
 /*
-LinkCutTree::LinkCutTree() {
-    trees = new std::vector <SplayTree>;
-}
-
-LinkCutTree::LinkCutTree(std::vector<SplayTree>* trees) {
-    this->trees = trees;
-}*/
+ LinkCutTree::LinkCutTree() {
+ trees = new std::vector <SplayTree>;
+ }
+ LinkCutTree::LinkCutTree(std::vector<SplayTree>* trees) {
+ this->trees = trees;
+ }*/
 
 LinkCutTree::~LinkCutTree() {
-   /* for(int i  = 0;i < trees->size(); ++i) {
-        (*trees)[i].~SplayTree();
-    }*/
+    /* for(int i  = 0;i < trees->size(); ++i) {
+     (*trees)[i].~SplayTree();
+     }*/
 }
 
 void LinkCutTree::link(Node* treeRoot, Node* vertex) {
@@ -112,4 +111,61 @@ void LinkCutTree::cutEdge(Node* vertex1, Node* vertex2) {
 size_t LinkCutTree::dist(Node* vertex1, Node* vertex2) {
     revert(vertex2);
     return depth(vertex1);
+}
+
+Node* LinkCutTree::lca(Node* vertex1, Node* vertex2) {
+    if(vertex1 == vertex2) {
+        return vertex1;
+    }
+    Node* candidate1 = getLca(vertex1, vertex2);
+    Node* candidate2 = getLca(vertex2, vertex1);
+    if(candidate1 == candidate2) {
+        return candidate1;
+    } else {
+        if(candidate2 == vertex2 || candidate2 == vertex1) {
+            return candidate2;
+        } else {
+            return candidate1;
+        }
+    }
+}
+
+Node* LinkCutTree::getLca(Node* vertex1, Node* vertex2) {
+    if(!vertex1 || !vertex2) {
+        return nullptr;
+    }
+    
+    expose(vertex1);
+    expose(vertex2);
+    return leftest(supportRoot(vertex1))->link;
+}
+
+size_t LinkCutTree::getDist(Node* vertex1, Node* vertex2) {
+    size_t dist = 0;
+    
+    if(vertex1 == vertex2) {
+        return dist;
+    }
+    
+    Node* lcaVert = lca(vertex1, vertex2);
+    
+    if(!lcaVert) {
+        return SIZE_T_MAX;
+    }
+    
+    if(lcaVert == vertex2) {
+        std::swap(vertex1, vertex2);
+    }
+    
+    expose(vertex2);
+    expose(vertex1);
+    expose(lcaVert);
+    
+    dist += supportRoot(vertex2)->subtreeWeight;
+    
+    if(vertex1 != lcaVert) {
+        dist += supportRoot(vertex1)->subtreeWeight;
+    }
+    
+    return dist;
 }

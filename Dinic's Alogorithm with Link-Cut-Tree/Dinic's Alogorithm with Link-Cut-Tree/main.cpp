@@ -17,7 +17,7 @@ void solve();
 
 int main() {
    // splayTest();
-   // linkCutTest();
+    //linkCutTest();
     solve();
     return 0;
 }
@@ -60,6 +60,88 @@ void splayTest() {
 }
 
 void linkCutTest() {
+    size_t weights[10] = {0, 5, 0, 6, 4, 2, 3, 1, 0, 0};
+    std::vector <Node> nodes(10, *(new Node(0)));
+    std::vector <SplayTree> trees;
+    for(int i = 0;i < 10; ++i) {
+        nodes[i].key = i;
+        nodes[i].edgeWeight = weights[i];
+        trees.push_back(*(new SplayTree(&nodes[i])));
+    }
+    LinkCutTree* tree = new LinkCutTree();
+    
+    tree->link(&nodes[1], &nodes[2]);
+    tree->link(&nodes[3], &nodes[2]);
+    tree->link(&nodes[4], &nodes[1]);
+    tree->link(&nodes[5], &nodes[4]);
+    tree->link(&nodes[6], &nodes[4]);
+    tree->link(&nodes[7], &nodes[6]);
+    for(int i = 1;i < 8;++i) {
+      //  if(i != 1) {
+        std::cout << i << ": " << tree->depth(&nodes[i]) << std::endl;
+      //  }
+    }
+    
+    Node* lca61 = tree->lca(&nodes[6], &nodes[1]);
+    Node* lca73 = tree->lca(&nodes[7], &nodes[3]);
+    Node* lca57 = tree->lca(&nodes[5], &nodes[7]);
+    Node* lca72 = tree->lca(&nodes[7], &nodes[2]);
+    size_t dist61 = tree->getDist(&nodes[6], &nodes[1]);
+    size_t dist73 = tree->getDist(&nodes[7], &nodes[3]);
+    size_t dist57 = tree->getDist(&nodes[5], &nodes[7]);
+    size_t dist72 = tree->getDist(&nodes[7], &nodes[2]);
+    
+    
+    std::cout <<"lca(6,1): " << lca61->key << std::endl;
+    std::cout <<"lca(7,3): " << lca73->key << std::endl;
+    std::cout <<"lca(5,7): " << lca57->key << std::endl;
+    std::cout <<"lca(7,2): " << lca72->key << std::endl;
+   
+    std::cout <<"dist(6,1): " << dist61 << std::endl;
+    std::cout <<"dist(7,3): " << dist73 << std::endl;
+    std::cout <<"dist(5,7): " << dist57 << std::endl;
+    std::cout <<"dist(7,2): " << dist72 << std::endl;
+    tree->cut(&nodes[6], &nodes[4]);
+   // tree->revert(&nodes[4]);
+   // tree->supportRoot(&nodes[6]);
+    //nodes[6].edgeWeight = 8;
+    //nodes[6].treePtr->updateTreeSize(7nodes[6]);
+    tree->link(&nodes[6], &nodes[3]);
+   //
+
+    
+    std::cout << "*********************" << std::endl;
+    
+    lca61 = tree->lca(&nodes[1], &nodes[6]);
+    lca73 = tree->lca(&nodes[3], &nodes[7]);
+    lca57 = tree->lca(&nodes[7], &nodes[5]);
+    
+    dist61 = tree->getDist(&nodes[1], &nodes[6]);
+    dist73 = tree->getDist(&nodes[3], &nodes[7]);
+    dist57 = tree->getDist(&nodes[7], &nodes[5]);
+    dist72 = tree->getDist(&nodes[7], &nodes[2]);
+    
+    for(int i = 1;i < 8;++i) {
+        //  if(i != 1) {
+        std::cout << i << ": " << tree->depth(&nodes[i]) << std::endl;
+        //  }
+    }
+    
+    std::cout <<"lca(6,1): " << lca61->key << std::endl;
+    std::cout <<"lca(7,3): " << lca73->key << std::endl;
+    std::cout <<"lca(5,7): " << lca57->key << std::endl;
+    std::cout <<"lca(7,2): " << lca72->key << std::endl;
+    std::cout <<"dist(6,1): " << dist61 << std::endl;
+    std::cout <<"dist(7,3): " << dist73 << std::endl;
+    std::cout <<"dist(5,7): " << dist57 << std::endl;
+    std::cout <<"dist(7,2): " << dist72 << std::endl;
+}
+
+using namespace std;
+
+#define loop(i,n) for(int i = 0;i < n;++i)
+
+void solve() {
     std::vector <Node> nodes(10, *(new Node(0)));
     std::vector <SplayTree> trees;
     for(int i = 0;i < 10; ++i) {
@@ -68,82 +150,27 @@ void linkCutTest() {
     }
     LinkCutTree* tree = new LinkCutTree();
     
-    tree->linkEdge(&nodes[0], &nodes[1]);
-    tree->linkEdge(&nodes[2], &nodes[1]);
-    tree->linkEdge(&nodes[3], &nodes[2]);
-    tree->linkEdge(&nodes[4], &nodes[2]);
-    tree->revert(&nodes[1]);
-    
-    for(int i = 0;i < 5;++i) {
-      //  if(i != 1) {
-        std::cout << i << ": " << tree->depth(&nodes[i]) << std::endl;
-      //  }
-    }
-    
-    for(int i = 0; i < 5;++i) {
-      //  if(i != 0) {
-            std::cout << "dist(0," << i << "): " << tree->dist(&nodes[0], &nodes[i]) << std::endl;
-      //  }
-    }
-    
-    tree->revert(&nodes[1]);
-    tree->cut(&nodes[2], &nodes[1]);
-    tree->revert(&nodes[4]);
-    tree->link(&nodes[4], &nodes[0]);
-   //
-
-    
-    std::cout << "*********************" << std::endl;
-    
-    for(int i = 0;i < 5;++i) {
+    tree->link(&nodes[1], &nodes[2]);
+    tree->link(&nodes[3], &nodes[2]);
+    //tree->link(&nodes[4], &nodes[1]);
+    tree->link(&nodes[5], &nodes[4]);
+    tree->link(&nodes[6], &nodes[4]);
+    tree->link(&nodes[7], &nodes[6]);
+    tree->linkEdge(&nodes[2], &nodes[6]);
+    tree->revert(&nodes[5]);
+    std::cout << "lca(7,3): " << tree->lca(&nodes[7], &nodes[3])->key << std::endl;
+    for(int i = 1;i < 8;++i) {
         //  if(i != 1) {
         std::cout << i << ": " << tree->depth(&nodes[i]) << std::endl;
         //  }
     }
     
-    for(int i = 0; i < 5;++i) {
-        //  if(i != 0) {
-        std::cout << "dist(0," << i << "): " << tree->dist(&nodes[0], &nodes[i]) << std::endl;
+    tree->revert(&nodes[2]);
+    std::cout << "lca(7,3): " << tree->lca(&nodes[5], &nodes[7])->key << std::endl;
+    for(int i = 1;i < 8;++i) {
+        //  if(i != 1) {
+        std::cout << i << ": " << tree->depth(&nodes[i]) << std::endl;
         //  }
-    }
-    
-}
-
-using namespace std;
-
-#define loop(i,n) for(int i = 0;i < n;++i)
-
-void solve() {
-    int n,m;
-    scanf("%d",&n);
-    vector <Node> nodes(n, *(new Node(0)));
-    vector <SplayTree> trees;
-    vector <size_t> ans;
-    for(int i = 0;i < n; ++i) {
-        //nodes[i].key = i;
-        trees.push_back(*(new SplayTree(&nodes[i])));
-    }
-    LinkCutTree* tree = new LinkCutTree();
-    
-    cout <<"OK" << endl;
-    
-    int x,y;
-    loop(i,n-1) {
-        scanf("%d%d", &x,&y);
-        tree->linkEdge(&nodes[x], &nodes[y]);
-    }
-    
-    cout <<"OK" << endl;
-    
-    scanf("%d", &m);
-    
-    loop(i,m) {
-        scanf("%d%d", &x, &y);
-        ans.push_back(tree->dist(&nodes[x], &nodes[y]));
-    }
-    
-    loop(i,m) {
-        printf("%lld\n", (long long)ans[i]);
     }
 }
 
