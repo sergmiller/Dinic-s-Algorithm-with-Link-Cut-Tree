@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
-               BuildableName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-               BlueprintName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-               ReferencedContainer = "container:Dinic&apos;s Alogorithm with Link-Cut-Tree.xcodeproj">
+               BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+               BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+               ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
-            BuildableName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-            BlueprintName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-            ReferencedContainer = "container:Dinic&apos;s Alogorithm with Link-Cut-Tree.xcodeproj">
+            BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+            BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+            ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
-            BuildableName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-            BlueprintName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-            ReferencedContainer = "container:Dinic&apos;s Alogorithm with Link-Cut-Tree.xcodeproj">
+            BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+            BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+            ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
-            BuildableName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-            BlueprintName = "Dinic&apos;s Alogorithm with Link-Cut-Tree"
-            ReferencedContainer = "container:Dinic&apos;s Alogorithm with Link-Cut-Tree.xcodeproj">
+            BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+            BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
+            ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

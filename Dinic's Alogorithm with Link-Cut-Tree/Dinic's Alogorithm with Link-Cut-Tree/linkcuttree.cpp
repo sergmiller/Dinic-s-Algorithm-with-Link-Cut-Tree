@@ -161,11 +161,52 @@ size_t LinkCutTree::getDist(Node* vertex1, Node* vertex2) {
     expose(vertex1);
     expose(lcaVert);
     
-    dist += supportRoot(vertex2)->subtreeWeight;
+    dist += sumWeight(supportRoot(vertex2));
     
     if(vertex1 != lcaVert) {
-        dist += supportRoot(vertex1)->subtreeWeight;
+        dist += sumWeight(supportRoot(vertex1));
     }
     
     return dist;
+}
+
+Node* LinkCutTree::getMinEdge(Node* vertex) {
+    expose(findRoot(vertex));
+    supportRoot(vertex);
+    vertex->push();
+    size_t minValue = minWeight(vertex);
+    return findLeftestMin(minValue, vertex);
+}
+
+Node* LinkCutTree::findLeftestMin(size_t minValue, Node* vertex) {
+    vertex->push();
+    if(minWeight(vertex->leftChild) == minValue) {
+        return findLeftestMin(minValue, vertex->leftChild);
+    }
+    
+    if(minWeight(vertex) == minValue) {
+        return vertex;
+    }
+    
+    return findLeftestMin(minValue, vertex->rightChild);
+}
+
+void LinkCutTree::setWeight(Node* vertex, size_t weight) {
+    supportRoot(vertex);
+    vertex->edgeWeight = weight;
+    vertex->treePtr->updateTreeSize(vertex);
+    expose(vertex);
+}
+
+void LinkCutTree::removeWeightInPath(size_t added, Node* vertex) {
+    expose(findRoot(vertex));
+    supportRoot(vertex);
+    vertex->removedWeightValue += added;
+}
+
+size_t LinkCutTree::getEdgeWeight(Node* vertex) {
+    supportRoot(vertex);
+    size_t edgeWeight = vertex->edgeWeight;
+    expose(vertex);
+    return edgeWeight;
 }

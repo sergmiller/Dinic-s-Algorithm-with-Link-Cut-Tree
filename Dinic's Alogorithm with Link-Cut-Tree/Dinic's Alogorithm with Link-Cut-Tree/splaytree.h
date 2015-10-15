@@ -15,15 +15,17 @@ class Node;
 class SplayTree;
 
 size_t size(Node* vertex);
-size_t weight(Node* vertex);
+size_t sumWeight(Node* vertex);
+size_t minWeight(Node* vertex);
 
 class Node{
 public:
-    Node(int key, size_t weight = 0);
-    
-    int key;
+    Node(size_t key, size_t weight = 0);
+    size_t key;
     size_t edgeWeight;
-    size_t subtreeWeight;
+    size_t subtreeMinWeight;
+    size_t subtreeSumWeight;
+    size_t removedWeightValue;
     bool reverseFlag;
     Node* leftChild;
     Node* rightChild;
@@ -33,6 +35,7 @@ public:
     SplayTree* treePtr;
     
     void reverse();
+    void removeValue(size_t value, Node* vertex);
     void reverse(Node* vertex);
     void push();
     void recursiveDelete();
@@ -42,16 +45,16 @@ class SplayTree
 {
 private:
     Node* find(size_t position, Node* vertex);
-    void updateTreeSize(Node* vertex);
     void keepParent(Node* vertex);
     void setParent(Node* parent, Node* vertex);
     void rotate(Node* parent, Node* vertex);
-    Node* root;
 public:
+    Node* root;
     SplayTree(Node* root);
     ~SplayTree();
     
     void insert(int key, size_t position);
+    void updateTreeSize(Node* vertex);
     void remove(size_t position);
     void merge(SplayTree* addedTree); //added tree is right merged tree
     SplayTree* split(size_t position); //returned tree is tight splited tree

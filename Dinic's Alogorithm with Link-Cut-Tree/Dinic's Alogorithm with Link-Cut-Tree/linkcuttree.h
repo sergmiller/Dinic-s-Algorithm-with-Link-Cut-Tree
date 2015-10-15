@@ -23,19 +23,24 @@ private:
     Node* leftest(Node* root);
     Node* cutout(Node* vertex);
     Node* cleanUp(Node* vertex);
-    Node* findRoot(Node* vertex);
     Node* getLca(Node* vertex1, Node* vertex2);
+    Node* findLeftestMin(size_t minValue, Node* vertex);
 public:
     // LinkCutTree(std::vector<SplayTree>* trees);
     ~LinkCutTree();
     void makeTree(Node* vertex);
     void revert(Node* vertex);
+    void removeWeightInPath(size_t weight, Node* vertex);
     void cut(Node* vertex, Node* parent);
     void link(Node* treeRoot, Node* vertex);
     void linkEdge(Node* vertex1, Node* vertex2);
     void cutEdge(Node* vertex1, Node* vertex2);
+    void setWeight(Node* vertex, size_t weight);
+    size_t getEdgeWeight(Node* vertex);
     size_t getDist(Node* vertex1, Node* vertex2);
     Node* lca(Node* vertex1, Node* vertex2);
+    Node* getMinEdge(Node* vertex);
+    Node* findRoot(Node* vertex);
     size_t dist(Node* vertex1, Node* vertex2);
     size_t depth(Node* vertex);
     

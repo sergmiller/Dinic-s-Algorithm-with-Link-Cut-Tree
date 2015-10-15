@@ -10,17 +10,21 @@
 #include <cstdio>
 #include <vector>
 
-Node::Node(int key, size_t weight) {
+using std::min;
+
+Node::Node(size_t key, size_t weight) {
     this->key = key;
-    this->sizeOfSubtree = 1;
-    this->leftChild = nullptr;
-    this->rightChild = nullptr;
-    this->parent = nullptr;
-    this->treePtr = nullptr;
-    this->link = nullptr;
-    this->reverseFlag = false;
-    this->edgeWeight = weight;
-    this->subtreeWeight = weight;
+    sizeOfSubtree = 1;
+    leftChild = nullptr;
+    rightChild = nullptr;
+    parent = nullptr;
+    treePtr = nullptr;
+    link = nullptr;
+    reverseFlag = false;
+    edgeWeight = weight;
+    removedWeightValue = 0;
+    subtreeMinWeight = weight;
+    subtreeSumWeight = weight;
 }
 /*
  Node::Node() {
@@ -66,10 +70,23 @@ void Node::push() {
         reverse(leftChild);
         reverse(rightChild);
     }
+    if(removedWeightValue) {
+        edgeWeight -= removedWeightValue;
+        removeValue(removedWeightValue, leftChild);
+        removeValue(removedWeightValue, rightChild);
+        removedWeightValue  = 0;
+        treePtr->updateTreeSize(this);
+    }
 }
 
 void Node::reverse() {
     reverse(this);
+}
+
+void Node::removeValue(size_t value, Node* vertex) {
+    if(vertex) {
+        vertex->removedWeightValue += value;
+    }
 }
 
 void Node::reverse(Node* vertex) {
@@ -87,7 +104,8 @@ void SplayTree::setParent(Node* vertex, Node* parent) {
 void SplayTree::updateTreeSize(Node* vertex) {
     if(vertex) {
         vertex->sizeOfSubtree = size(vertex->leftChild) + size(vertex->rightChild) + 1;
-        vertex->subtreeWeight = weight(vertex->leftChild) + weight(vertex->rightChild) + vertex->edgeWeight;
+        vertex->subtreeSumWeight = sumWeight(vertex->leftChild) + sumWeight(vertex->rightChild) + vertex->edgeWeight;
+        vertex->subtreeMinWeight = min(min(minWeight(vertex->leftChild), minWeight(vertex->rightChild)), vertex->edgeWeight);
     }
 }
 
@@ -278,6 +296,10 @@ size_t size(Node* vertex) {
     return (vertex ? vertex->sizeOfSubtree : 0);
 }
 
-size_t weight(Node* vertex) {
-    return (vertex ? vertex->subtreeWeight : 0);
+size_t sumWeight(Node* vertex) {
+    return (vertex ? vertex->subtreeSumWeight - vertex->sizeOfSubtree * vertex->removedWeightValue : 0);
+}
+
+size_t minWeight(Node* vertex) {
+    return (vertex ? vertex->subtreeMinWeight -= vertex->removedWeightValue : SIZE_T_MAX);
 }
