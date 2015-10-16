@@ -19,8 +19,6 @@ private:
     //std::vector <SplayTree>* trees;
     //std::map <Node*, size_t> numberOfTree;
     SplayTree* getTree(Node* vertex);
-    Node* supportRoot(Node* vertex);   //it's splay current vertex
-    Node* leftest(Node* root);
     Node* cutout(Node* vertex);
     Node* cleanUp(Node* vertex);
     Node* getLca(Node* vertex1, Node* vertex2);
@@ -29,7 +27,7 @@ public:
     // LinkCutTree(std::vector<SplayTree>* trees);
     ~LinkCutTree();
     void makeTree(Node* vertex);
-    void revert(Node* vertex);
+    //void revert(Node* vertex);
     void removeWeightInPath(size_t weight, Node* vertex);
     void cut(Node* vertex, Node* parent);
     void link(Node* treeRoot, Node* vertex);
@@ -39,8 +37,10 @@ public:
     size_t getEdgeWeight(Node* vertex);
     size_t getDist(Node* vertex1, Node* vertex2);
     Node* lca(Node* vertex1, Node* vertex2);
+    Node* supportRoot(Node* vertex);   //it's splay current vertex
     Node* getMinEdge(Node* vertex);
     Node* findRoot(Node* vertex);
+    Node* leftest(Node* root);
     size_t dist(Node* vertex1, Node* vertex2);
     size_t depth(Node* vertex);
     

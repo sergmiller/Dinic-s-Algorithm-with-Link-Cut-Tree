@@ -82,8 +82,8 @@ public:
 
 class DinicFlowFinder : public FlowFinder {
 private:
-    ShortPathNetwork* shortPathNetwork;
-    BlockFlowFinder* blockFlowFinder;
+    ShortPathNetwork* shortPathNetwork = nullptr;
+    BlockFlowFinder* blockFlowFinder = nullptr;
 public:
     DinicFlowFinder();
     DinicFlowFinder(BlockFlowFinder* blockFlowFinder);
@@ -96,7 +96,7 @@ public:
 
 class ShortPathNetwork : public Network{
 public:
-    vector <size_t>* edgeID;
+    vector <size_t>* edgeID = nullptr;
     ShortPathNetwork(Graph* graph, size_t source, size_t sink, vector<size_t>* edgeID);
     ~ShortPathNetwork();
     void updateShortPathNetwork();
@@ -111,6 +111,7 @@ public:
 
 class LinkCutBlockFlowFinder : public BlockFlowFinder {
 private:
+    LinkCutTree linkCut;
     vector <SplayTree*> trees;
     vector <Node*> nodes;
     size_t source;
@@ -119,6 +120,8 @@ public:
     void clearTree();
     void init(Network* network);
     void findBlockFlow(ShortPathNetwork& shortPathNetwork);
+    Node* prevInPath(Node* source);
+    Node* nextInPath(Node* vertex);
 };
 
 //bool getNewPath();//get new path in BFS algorithm from source to sink

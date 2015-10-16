@@ -14,9 +14,10 @@
 class Node;
 class SplayTree;
 
-size_t size(Node* vertex);
-size_t sumWeight(Node* vertex);
-size_t minWeight(Node* vertex);
+size_t getSize(Node* vertex);
+size_t getMin(Node* vertex);
+size_t getSum(Node* vertex);
+void removeWeight(size_t value, Node* vertex);
 
 class Node{
 public:
@@ -26,7 +27,7 @@ public:
     size_t subtreeMinWeight;
     size_t subtreeSumWeight;
     size_t removedWeightValue;
-    bool reverseFlag;
+    //bool reverseFlag;
     Node* leftChild;
     Node* rightChild;
     Node* parent;
@@ -34,10 +35,10 @@ public:
     size_t sizeOfSubtree;
     SplayTree* treePtr;
     
-    void reverse();
-    void removeValue(size_t value, Node* vertex);
-    void reverse(Node* vertex);
     void push();
+    //void reverse();
+    //void removeValue(size_t value, Node* vertex);
+   //void reverse(Node* vertex);
     void recursiveDelete();
 };
 

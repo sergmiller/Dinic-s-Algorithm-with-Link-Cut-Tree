@@ -7,18 +7,10 @@
 //
 
 #include "linkcuttree.h"
-/*
- LinkCutTree::LinkCutTree() {
- trees = new std::vector <SplayTree>;
- }
- LinkCutTree::LinkCutTree(std::vector<SplayTree>* trees) {
- this->trees = trees;
- }*/
+
+
 
 LinkCutTree::~LinkCutTree() {
-    /* for(int i  = 0;i < trees->size(); ++i) {
-     (*trees)[i].~SplayTree();
-     }*/
 }
 
 void LinkCutTree::link(Node* treeRoot, Node* vertex) {
@@ -73,7 +65,7 @@ size_t LinkCutTree::depth(Node* vertex) {
 Node* LinkCutTree::cutout(Node* vertex) {
     supportRoot(vertex);
     SplayTree* left = vertex->treePtr;
-    SplayTree* right = left->split(size(vertex->leftChild) + 1);
+    SplayTree* right = left->split(getSize(vertex->leftChild) + 1);
     if(right->getRoot()) {
         right->find(0)->link = vertex;
     }
@@ -92,26 +84,26 @@ Node* LinkCutTree::expose(Node* vertex) {
     return vertex;
 }
 
-void LinkCutTree::revert(Node* vertex) {
-    Node* root = expose(vertex);
-    supportRoot(root);
-    root->reverse();
-}
+//void LinkCutTree::revert(Node* vertex) {
+//    Node* root = expose(vertex);
+//    supportRoot(root);
+//    root->reverse();
+//}
 
-void LinkCutTree::linkEdge(Node* vertex1, Node* vertex2) {
-    revert(vertex1);
-    link(vertex1, vertex2);
-}
-
-void LinkCutTree::cutEdge(Node* vertex1, Node* vertex2) {
-    revert(vertex2);
-    cut(vertex1, vertex2);
-}
-
-size_t LinkCutTree::dist(Node* vertex1, Node* vertex2) {
-    revert(vertex2);
-    return depth(vertex1);
-}
+//void LinkCutTree::linkEdge(Node* vertex1, Node* vertex2) {
+//    revert(vertex1);
+//    link(vertex1, vertex2);
+//}
+//
+//void LinkCutTree::cutEdge(Node* vertex1, Node* vertex2) {
+//    revert(vertex2);
+//    cut(vertex1, vertex2);
+//}
+//
+//size_t LinkCutTree::dist(Node* vertex1, Node* vertex2) {
+//    revert(vertex2);
+//    return depth(vertex1);
+//}
 
 Node* LinkCutTree::lca(Node* vertex1, Node* vertex2) {
     if(vertex1 == vertex2) {
@@ -161,10 +153,10 @@ size_t LinkCutTree::getDist(Node* vertex1, Node* vertex2) {
     expose(vertex1);
     expose(lcaVert);
     
-    dist += sumWeight(supportRoot(vertex2));
+    dist += getSum(supportRoot(vertex2));
     
     if(vertex1 != lcaVert) {
-        dist += sumWeight(supportRoot(vertex1));
+        dist += getSum(supportRoot(vertex1));
     }
     
     return dist;
@@ -174,17 +166,17 @@ Node* LinkCutTree::getMinEdge(Node* vertex) {
     expose(findRoot(vertex));
     supportRoot(vertex);
     vertex->push();
-    size_t minValue = minWeight(vertex);
+    size_t minValue = getMin(vertex);
     return findLeftestMin(minValue, vertex);
 }
 
 Node* LinkCutTree::findLeftestMin(size_t minValue, Node* vertex) {
     vertex->push();
-    if(minWeight(vertex->leftChild) == minValue) {
+    if(getMin(vertex->leftChild) == minValue) {
         return findLeftestMin(minValue, vertex->leftChild);
     }
     
-    if(minWeight(vertex) == minValue) {
+    if(vertex->edgeWeight == minValue) {
         return vertex;
     }
     
@@ -201,11 +193,12 @@ void LinkCutTree::setWeight(Node* vertex, size_t weight) {
 void LinkCutTree::removeWeightInPath(size_t added, Node* vertex) {
     expose(findRoot(vertex));
     supportRoot(vertex);
-    vertex->removedWeightValue += added;
+    removeWeight(added, vertex);
 }
 
 size_t LinkCutTree::getEdgeWeight(Node* vertex) {
     supportRoot(vertex);
+    vertex->push();
     size_t edgeWeight = vertex->edgeWeight;
     expose(vertex);
     return edgeWeight;
