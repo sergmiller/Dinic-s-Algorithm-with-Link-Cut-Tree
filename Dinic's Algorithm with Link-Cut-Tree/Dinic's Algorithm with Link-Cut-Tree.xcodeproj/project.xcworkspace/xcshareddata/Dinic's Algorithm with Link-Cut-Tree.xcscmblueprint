@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "206C1D307326CEC7964EAD9322061D40F4642F88",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "90DB0A583977EEA75C4A3464A30597B576386428" : 0,
+    "206C1D307326CEC7964EAD9322061D40F4642F88" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "8FFD0EDF-B6D3-4939-A243-17226BDEC86B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "90DB0A583977EEA75C4A3464A30597B576386428" : "",
+    "206C1D307326CEC7964EAD9322061D40F4642F88" : "Dinic-s-Algorithm-with-Link-Cut-Tree\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Dinic's Algorithm with Link-Cut-Tree",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Dinic's Algorithm with Link-Cut-Tree\/Dinic's Algorithm with Link-Cut-Tree.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/sergmiller\/Dinic-s-Alogorithm-with-Link-Cut-Tree.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "206C1D307326CEC7964EAD9322061D40F4642F88"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/sergmiller\/CodeBySergMiller.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "90DB0A583977EEA75C4A3464A30597B576386428"
+    }
+  ]
+}
