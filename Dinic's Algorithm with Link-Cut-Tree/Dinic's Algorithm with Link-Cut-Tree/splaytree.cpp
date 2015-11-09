@@ -56,7 +56,7 @@ void Node::push() {
 SplayTree::SplayTree(Node* root) {
     this->root = root;
     if(root) {
-    root->treePtr = this;
+        root->treePtr = this;
     }
 }
 
@@ -227,7 +227,7 @@ SplayTree* SplayTree::split(size_t position){
         root->push();
     }
     
-   // updateTreeSize(root);
+    // updateTreeSize(root);
     //updateTreeSize(rightTree->root);
     
     return rightTree;

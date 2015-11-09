@@ -65,6 +65,8 @@ public:
 
 class Bfs{
 public:
+    Bfs();
+    ~Bfs();
     vector <bool>* used;
     vector <size_t>* dist;
     Network* network;

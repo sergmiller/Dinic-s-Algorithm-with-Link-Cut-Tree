@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Dinic's Alogorithm with Link-Cut-Tree.xcscheme</key>
+		<key>Dinic's Algorithm with Link-Cut-Tree.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -12,7 +12,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>B912CFC21BCB25DC004B9F5A</key>
+		<key>B96CFB641BF115B600727F48</key>
 		<dict>
 			<key>primary</key>
 			<true/>

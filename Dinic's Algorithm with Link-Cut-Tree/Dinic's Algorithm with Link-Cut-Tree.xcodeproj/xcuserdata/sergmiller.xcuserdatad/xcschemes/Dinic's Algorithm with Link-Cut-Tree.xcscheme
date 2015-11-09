@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0700"
+   LastUpgradeVersion = "0710"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
+               BlueprintIdentifier = "B96CFB641BF115B600727F48"
                BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
                BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
                ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
+            BlueprintIdentifier = "B96CFB641BF115B600727F48"
             BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
             BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
             ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">
@@ -47,7 +47,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/sergmiller/Documents/projcpp/Dinic-s-Alogorithm-with-Link-Cut-Tree/Dinic&apos;s Alogorithm with Link-Cut-Tree/Dinic&apos;s Alogorithm with Link-Cut-Tree"
+      customWorkingDirectory = "/Users/sergmiller/Documents/projcpp/Dinic-s-Algorithm-with-Link-Cut-Tree/Dinic&apos;s Algorithm with Link-Cut-Tree/Dinic&apos;s Algorithm with Link-Cut-Tree"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -56,7 +56,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
+            BlueprintIdentifier = "B96CFB641BF115B600727F48"
             BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
             BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
             ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">
@@ -75,7 +75,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B912CFC21BCB25DC004B9F5A"
+            BlueprintIdentifier = "B96CFB641BF115B600727F48"
             BuildableName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
             BlueprintName = "Dinic&apos;s Algorithm with Link-Cut-Tree"
             ReferencedContainer = "container:Dinic&apos;s Algorithm with Link-Cut-Tree.xcodeproj">

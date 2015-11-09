@@ -1,42 +1,42 @@
-block: 0.058002
-block: 0.060591
-block: 0.05998
-block: 0.062109
-block: 0.05723
-block: 0.058009
-block: 0.05897
-block: 0.059299
-block: 0.059284
-block: 0.059609
-block: 0.06219
-block: 0.067272
-block: 0.06043
-block: 0.057352
-block: 0.057236
-block: 0.062677
-block: 0.06058
-block: 0.056653
-block: 0.059231
-block: 0.056716
-block: 0.056719
-block: 0.056723
-block: 0.056644
-block: 0.05677
-block: 0.061794
-block: 0.060198
-block: 0.056652
-block: 0.056738
-block: 0.056752
-block: 0.056958
-block: 0.059012
-block: 0.064526
-block: 0.063521
-block: 0.064964
-block: 0.062726
-block: 0.059646
-block: 0.057528
-end: 2.30169
-sum: 2.21121
+block: 0.061781
+block: 0.056705
+block: 0.058504
+block: 0.064104
+block: 0.056473
+block: 0.05724
+block: 0.060103
+block: 0.061841
+block: 0.0606
+block: 0.062427
+block: 0.064642
+block: 0.059286
+block: 0.062178
+block: 0.057967
+block: 0.060662
+block: 0.058229
+block: 0.059505
+block: 0.057334
+block: 0.059263
+block: 0.060667
+block: 0.057219
+block: 0.056755
+block: 0.056645
+block: 0.060538
+block: 0.063827
+block: 0.056889
+block: 0.056885
+block: 0.059496
+block: 0.057258
+block: 0.056758
+block: 0.056797
+block: 0.063906
+block: 0.060136
+block: 0.056735
+block: 0.056682
+block: 0.060689
+block: 0.057731
+end: 2.29735
+sum: 2.20482
 181300
 1
 1
@@ -9999,3 +9999,4 @@ sum: 2.21121
 0
 0
 0
+aaa

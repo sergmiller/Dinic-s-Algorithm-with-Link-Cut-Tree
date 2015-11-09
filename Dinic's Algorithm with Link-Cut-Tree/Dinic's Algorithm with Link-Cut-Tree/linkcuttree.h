@@ -24,7 +24,7 @@ private:
     Node* getLca(Node* vertex1, Node* vertex2);
     Node* findLeftestMin(size_t minValue, Node* vertex);
 public:
-    Node* lastEx;
+    Node* lastExposed;
     // LinkCutTree(std::vector<SplayTree>* trees);
     ~LinkCutTree();
     void makeTree(Node* vertex);

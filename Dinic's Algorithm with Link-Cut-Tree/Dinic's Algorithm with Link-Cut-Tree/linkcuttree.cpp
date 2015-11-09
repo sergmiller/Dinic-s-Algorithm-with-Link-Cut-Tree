@@ -27,7 +27,7 @@ void LinkCutTree::cut(Node* vertex, Node* parent) {
 }
 
 Node* LinkCutTree::findRoot(Node* vertex) {
-    if(vertex != lastEx) {
+    if(vertex != lastExposed) {
         expose(vertex);
     }
     return leftest(supportRoot(vertex));
@@ -85,8 +85,9 @@ Node* LinkCutTree::cutout(Node* vertex) {
 //    }
 //    return supportRoot(memVert);
 //}
+
 Node* LinkCutTree::expose(Node* vertex) {
-    lastEx = vertex;
+    lastExposed = vertex;
     Node* next;
     vertex = leftest(supportRoot(cutout(vertex)));
     while(vertex->link != nullptr) {

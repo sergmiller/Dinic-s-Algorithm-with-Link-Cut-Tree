@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B912CFC71BCB25DC004B9F5A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B912CFC61BCB25DC004B9F5A /* main.cpp */; };
-		B912CFCF1BCB267A004B9F5A /* splaytree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B912CFCE1BCB267A004B9F5A /* splaytree.cpp */; };
-		B912CFD21BCB2B25004B9F5A /* linkcuttree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */; };
-		B912CFE71BCDB62A004B9F5A /* dinicmaxflow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B912CFE61BCDB62A004B9F5A /* dinicmaxflow.cpp */; };
+		B96CFB691BF115B600727F48 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B96CFB681BF115B600727F48 /* main.cpp */; };
+		B96CFB701BF116CE00727F48 /* splaytree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B96CFB6F1BF116CE00727F48 /* splaytree.cpp */; };
+		B96CFB741BF1171100727F48 /* linkcuttree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B96CFB721BF1171100727F48 /* linkcuttree.cpp */; };
+		B96CFB771BF1175300727F48 /* dinicmaxflow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B96CFB751BF1175300727F48 /* dinicmaxflow.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		B912CFC11BCB25DC004B9F5A /* CopyFiles */ = {
+		B96CFB631BF115B600727F48 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -26,20 +26,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B912CFC31BCB25DC004B9F5A /* Dinic's Algorithm with Link-Cut-Tree */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Dinic's Algorithm with Link-Cut-Tree"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B912CFC61BCB25DC004B9F5A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		B912CFCD1BCB264D004B9F5A /* splaytree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = splaytree.h; sourceTree = "<group>"; };
-		B912CFCE1BCB267A004B9F5A /* splaytree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = splaytree.cpp; sourceTree = "<group>"; };
-		B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linkcuttree.cpp; sourceTree = "<group>"; };
-		B912CFD11BCB2B25004B9F5A /* linkcuttree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linkcuttree.h; sourceTree = "<group>"; };
-		B912CFE61BCDB62A004B9F5A /* dinicmaxflow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dinicmaxflow.cpp; sourceTree = "<group>"; };
-		B912CFE81BCDB646004B9F5A /* dinicmaxflow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dinicmaxflow.h; sourceTree = "<group>"; };
-		B939A4C91BD1A1D4000FE8B6 /* input.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = input.txt; sourceTree = "<group>"; };
-		B9E37A4B1BD299D0000DC776 /* output.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = output.txt; sourceTree = "<group>"; };
+		B96CFB651BF115B600727F48 /* Dinic's Algorithm with Link-Cut-Tree */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Dinic's Algorithm with Link-Cut-Tree"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B96CFB681BF115B600727F48 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		B96CFB6F1BF116CE00727F48 /* splaytree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = splaytree.cpp; sourceTree = "<group>"; };
+		B96CFB711BF116EE00727F48 /* splaytree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = splaytree.h; sourceTree = "<group>"; };
+		B96CFB721BF1171100727F48 /* linkcuttree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linkcuttree.cpp; sourceTree = "<group>"; };
+		B96CFB731BF1171100727F48 /* linkcuttree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linkcuttree.h; sourceTree = "<group>"; };
+		B96CFB751BF1175300727F48 /* dinicmaxflow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dinicmaxflow.cpp; sourceTree = "<group>"; };
+		B96CFB761BF1175300727F48 /* dinicmaxflow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dinicmaxflow.h; sourceTree = "<group>"; };
+		B96CFB781BF1178500727F48 /* input.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = input.txt; sourceTree = "<group>"; };
+		B96CFB791BF1179200727F48 /* output.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = output.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B912CFC01BCB25DC004B9F5A /* Frameworks */ = {
+		B96CFB621BF115B600727F48 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -49,34 +49,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B912CFBA1BCB25DC004B9F5A = {
+		B96CFB5C1BF115B600727F48 = {
 			isa = PBXGroup;
 			children = (
-				B912CFC51BCB25DC004B9F5A /* Dinic's Algorithm with Link-Cut-Tree */,
-				B912CFC41BCB25DC004B9F5A /* Products */,
+				B96CFB671BF115B600727F48 /* Dinic's Algorithm with Link-Cut-Tree */,
+				B96CFB661BF115B600727F48 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		B912CFC41BCB25DC004B9F5A /* Products */ = {
+		B96CFB661BF115B600727F48 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B912CFC31BCB25DC004B9F5A /* Dinic's Algorithm with Link-Cut-Tree */,
+				B96CFB651BF115B600727F48 /* Dinic's Algorithm with Link-Cut-Tree */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B912CFC51BCB25DC004B9F5A /* Dinic's Algorithm with Link-Cut-Tree */ = {
+		B96CFB671BF115B600727F48 /* Dinic's Algorithm with Link-Cut-Tree */ = {
 			isa = PBXGroup;
 			children = (
-				B912CFC61BCB25DC004B9F5A /* main.cpp */,
-				B939A4C91BD1A1D4000FE8B6 /* input.txt */,
-				B912CFCD1BCB264D004B9F5A /* splaytree.h */,
-				B912CFCE1BCB267A004B9F5A /* splaytree.cpp */,
-				B912CFD11BCB2B25004B9F5A /* linkcuttree.h */,
-				B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */,
-				B912CFE81BCDB646004B9F5A /* dinicmaxflow.h */,
-				B912CFE61BCDB62A004B9F5A /* dinicmaxflow.cpp */,
-				B9E37A4B1BD299D0000DC776 /* output.txt */,
+				B96CFB681BF115B600727F48 /* main.cpp */,
+				B96CFB6F1BF116CE00727F48 /* splaytree.cpp */,
+				B96CFB711BF116EE00727F48 /* splaytree.h */,
+				B96CFB721BF1171100727F48 /* linkcuttree.cpp */,
+				B96CFB731BF1171100727F48 /* linkcuttree.h */,
+				B96CFB751BF1175300727F48 /* dinicmaxflow.cpp */,
+				B96CFB761BF1175300727F48 /* dinicmaxflow.h */,
+				B96CFB781BF1178500727F48 /* input.txt */,
+				B96CFB791BF1179200727F48 /* output.txt */,
 			);
 			path = "Dinic's Algorithm with Link-Cut-Tree";
 			sourceTree = "<group>";
@@ -84,70 +84,70 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B912CFC21BCB25DC004B9F5A /* Dinic's Algorithm with Link-Cut-Tree */ = {
+		B96CFB641BF115B600727F48 /* Dinic's Algorithm with Link-Cut-Tree */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B912CFCA1BCB25DC004B9F5A /* Build configuration list for PBXNativeTarget "Dinic's Algorithm with Link-Cut-Tree" */;
+			buildConfigurationList = B96CFB6C1BF115B600727F48 /* Build configuration list for PBXNativeTarget "Dinic's Algorithm with Link-Cut-Tree" */;
 			buildPhases = (
-				B912CFBF1BCB25DC004B9F5A /* Sources */,
-				B912CFC01BCB25DC004B9F5A /* Frameworks */,
-				B912CFC11BCB25DC004B9F5A /* CopyFiles */,
+				B96CFB611BF115B600727F48 /* Sources */,
+				B96CFB621BF115B600727F48 /* Frameworks */,
+				B96CFB631BF115B600727F48 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "Dinic's Algorithm with Link-Cut-Tree";
-			productName = "Dinic's Alogorithm with Link-Cut-Tree";
-			productReference = B912CFC31BCB25DC004B9F5A /* Dinic's Algorithm with Link-Cut-Tree */;
+			productName = "Dinic's Algorithm with Link-Cut-Tree";
+			productReference = B96CFB651BF115B600727F48 /* Dinic's Algorithm with Link-Cut-Tree */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		B912CFBB1BCB25DC004B9F5A /* Project object */ = {
+		B96CFB5D1BF115B600727F48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Сергей Миллер";
 				TargetAttributes = {
-					B912CFC21BCB25DC004B9F5A = {
-						CreatedOnToolsVersion = 7.0.1;
+					B96CFB641BF115B600727F48 = {
+						CreatedOnToolsVersion = 7.1;
 					};
 				};
 			};
-			buildConfigurationList = B912CFBE1BCB25DC004B9F5A /* Build configuration list for PBXProject "Dinic's Algorithm with Link-Cut-Tree" */;
+			buildConfigurationList = B96CFB601BF115B600727F48 /* Build configuration list for PBXProject "Dinic's Algorithm with Link-Cut-Tree" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = B912CFBA1BCB25DC004B9F5A;
-			productRefGroup = B912CFC41BCB25DC004B9F5A /* Products */;
+			mainGroup = B96CFB5C1BF115B600727F48;
+			productRefGroup = B96CFB661BF115B600727F48 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B912CFC21BCB25DC004B9F5A /* Dinic's Algorithm with Link-Cut-Tree */,
+				B96CFB641BF115B600727F48 /* Dinic's Algorithm with Link-Cut-Tree */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B912CFBF1BCB25DC004B9F5A /* Sources */ = {
+		B96CFB611BF115B600727F48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B912CFD21BCB2B25004B9F5A /* linkcuttree.cpp in Sources */,
-				B912CFC71BCB25DC004B9F5A /* main.cpp in Sources */,
-				B912CFE71BCDB62A004B9F5A /* dinicmaxflow.cpp in Sources */,
-				B912CFCF1BCB267A004B9F5A /* splaytree.cpp in Sources */,
+				B96CFB741BF1171100727F48 /* linkcuttree.cpp in Sources */,
+				B96CFB691BF115B600727F48 /* main.cpp in Sources */,
+				B96CFB771BF1175300727F48 /* dinicmaxflow.cpp in Sources */,
+				B96CFB701BF116CE00727F48 /* splaytree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		B912CFC81BCB25DC004B9F5A /* Debug */ = {
+		B96CFB6A1BF115B600727F48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -164,6 +164,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -189,7 +190,7 @@
 			};
 			name = Debug;
 		};
-		B912CFC91BCB25DC004B9F5A /* Release */ = {
+		B96CFB6B1BF115B600727F48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -206,6 +207,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -224,42 +226,41 @@
 			};
 			name = Release;
 		};
-		B912CFCB1BCB25DC004B9F5A /* Debug */ = {
+		B96CFB6D1BF115B600727F48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "Dinic's Algorithm with Link-Cut-Tree";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		B912CFCC1BCB25DC004B9F5A /* Release */ = {
+		B96CFB6E1BF115B600727F48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "Dinic's Algorithm with Link-Cut-Tree";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B912CFBE1BCB25DC004B9F5A /* Build configuration list for PBXProject "Dinic's Algorithm with Link-Cut-Tree" */ = {
+		B96CFB601BF115B600727F48 /* Build configuration list for PBXProject "Dinic's Algorithm with Link-Cut-Tree" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B912CFC81BCB25DC004B9F5A /* Debug */,
-				B912CFC91BCB25DC004B9F5A /* Release */,
+				B96CFB6A1BF115B600727F48 /* Debug */,
+				B96CFB6B1BF115B600727F48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B912CFCA1BCB25DC004B9F5A /* Build configuration list for PBXNativeTarget "Dinic's Algorithm with Link-Cut-Tree" */ = {
+		B96CFB6C1BF115B600727F48 /* Build configuration list for PBXNativeTarget "Dinic's Algorithm with Link-Cut-Tree" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B912CFCB1BCB25DC004B9F5A /* Debug */,
-				B912CFCC1BCB25DC004B9F5A /* Release */,
+				B96CFB6D1BF115B600727F48 /* Debug */,
+				B96CFB6E1BF115B600727F48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = B912CFBB1BCB25DC004B9F5A /* Project object */;
+	rootObject = B96CFB5D1BF115B600727F48 /* Project object */;
 }

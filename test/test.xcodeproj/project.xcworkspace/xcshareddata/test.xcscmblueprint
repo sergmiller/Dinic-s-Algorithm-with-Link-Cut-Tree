@@ -7,14 +7,14 @@
     "90DB0A583977EEA75C4A3464A30597B576386428" : 0,
     "206C1D307326CEC7964EAD9322061D40F4642F88" : 0
   },
-  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "5E0A71B0-34B2-4A93-B521-139AC5E47587",
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E740AD3D-49AB-4600-8964-1815D1BC70D1",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "90DB0A583977EEA75C4A3464A30597B576386428" : "",
     "206C1D307326CEC7964EAD9322061D40F4642F88" : "Dinic-s-Alogorithm-with-Link-Cut-Tree\/"
   },
-  "DVTSourceControlWorkspaceBlueprintNameKey" : "Dinic's Alogorithm with Link-Cut-Tree",
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "test",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
-  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Dinic's Alogorithm with Link-Cut-Tree\/Dinic's Alogorithm with Link-Cut-Tree.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "test\/test.xcodeproj",
   "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/sergmiller\/Dinic-s-Alogorithm-with-Link-Cut-Tree.git",

@@ -30,18 +30,18 @@ public:
     size_t edgeWeight;
     size_t subtreeMinWeight;
     size_t removedWeightValue;
+    size_t sizeOfSubtree;
     //bool reverseFlag;
     Node* leftChild;
     Node* rightChild;
     Node* parent;
     Node* link;
-    size_t sizeOfSubtree;
     SplayTree* treePtr;
     
     void push();
     //void reverse();
     //void removeValue(size_t value, Node* vertex);
-   //void reverse(Node* vertex);
+    //void reverse(Node* vertex);
     void recursiveDelete();
 };
 
