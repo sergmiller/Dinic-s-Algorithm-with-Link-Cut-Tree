@@ -356,8 +356,6 @@ size_t minWeight(Node* vertex) {
     return (vertex ? vertex->subtreeMinWeight -= vertex->removedWeightValue : SIZE_T_MAX);
 }
 
-//*******************************************************************************************************
-
 class LinkCutTree {
 private:
     //std::vector <SplayTree>* trees;
@@ -389,10 +387,10 @@ public:
     size_t depth(Node* vertex);
     
     Node* expose(Node* vertex);
-};
-
+};*/
+/*
 LinkCutTree::~LinkCutTree() {
-    /* for(int i  = 0;i < trees->size(); ++i) {
+     for(int i  = 0;i < trees->size(); ++i) {
      (*trees)[i].~SplayTree();
      }*
 }
@@ -586,8 +584,6 @@ size_t LinkCutTree::getEdgeWeight(Node* vertex) {
     expose(vertex);
     return edgeWeight;
 }
-
-//**********************************************************************************************
 
 
 class Bfs;
@@ -991,19 +987,25 @@ void solve();
 void linkCutTest();
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
     solve();
     //linkCutTest();
+    //cout << "aaa" << endl;
     return 0;
 }
 
-
 void solve() {
-    size_t vert, edge, to, from , capacity;
+    long long vert, edge, to, from, capacity;
     vector <DirectEdge> edgeList;
-    DirectEdge curEdge;
+   DirectEdge curEdge;
     cin >> vert >> edge;
-    for(size_t i = 0;i < edge;++i) {
-        cin >> to >> from >> capacity;
+   // scanf("%lld%lld",&vert,&edge);
+    //cout << "OK" << endl;
+    for(int i = 0;i < edge;++i) {
+       cin >> to >> from >> capacity;
+       //     scanf("%lld%lld%lld",&to,&from,&capacity);
         --to;
         --from;
         curEdge.start = to;
@@ -1012,13 +1014,18 @@ void solve() {
         edgeList.push_back(curEdge);
     }
     
+    //cout <<"OK" << endl;
+    
     Graph graph(vert, edgeList);
     LinkCutBlockFlowFinder linkCutBlockflowFinder;
     DinicFlowFinder dinicFlowFinder(&linkCutBlockflowFinder);
     Network network(&graph, 0, vert - 1);
+        double clock7 = clock();
     network.getMaxFlow(dinicFlowFinder);
+    std::cout << "end: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
+    std::cout << "sum: " << dinicFlowFinder.sumTime << std::endl;
     
-    cout << endl;
+    //cout << "OK" << endl;
     
     cout << dinicFlowFinder.maxFlow << endl;
     
@@ -1035,7 +1042,7 @@ void solve() {
 //3 4 10
 //4 3 10
 //2 1 10
-
+/*
 void linkCutTest() {
     size_t weights[10] = {0, 5, 10, 3, 4, 3, 4, 3, 0, 0};
     std::vector <Node> nodes(10, *(new Node(0)));
@@ -1117,4 +1124,4 @@ void linkCutTest() {
     std::cout <<"dist(7,2): " << dist72 << std::endl;
     std::cout << "min_to_root_from_7: " << tree->getMinEdge(&nodes[7])->key << std::endl;
     std::cout << "min_to_root_from_5: " << tree->getMinEdge(&nodes[4])->key << std::endl;
-}
+}*/

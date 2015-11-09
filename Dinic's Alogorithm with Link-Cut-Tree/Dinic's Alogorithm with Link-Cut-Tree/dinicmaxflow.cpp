@@ -1,3 +1,4 @@
+
 //
 //  dinicmaxflow.cpp
 //  Dinic's Alogorithm with Link-Cut-Tree
@@ -7,11 +8,15 @@
 //
 
 #include <cstdio>
+#include "time.h"
 #include "dinicmaxflow.h"
+#include <fstream>
+#include <iostream>
 
 using std::vector;
 using std::pair;
 using std::queue;
+using std::cout;
 
 Graph::Graph(size_t vertices, vector <DirectEdge>& edges):edgeList(edges)
 {
@@ -69,10 +74,12 @@ void DinicFlowFinder::initFlowFinder(Network* network) {
 }
 
 void DinicFlowFinder::calcMaxFlow() {
-
     blockFlowFinder->init(network);
     while(getShortPathNetwork()) {
+        double clock7 = clock();
         blockFlowFinder->findBlockFlow(*shortPathNetwork);
+        //std::cout << "aft: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
+        sumTime += (clock() - clock7)/CLOCKS_PER_SEC;
         DirectEdge originalEdge;
         DirectEdge imageEdge;
         vector <DirectEdge>& originEdgeList = network->graph->edgeList;
@@ -89,7 +96,7 @@ void DinicFlowFinder::calcMaxFlow() {
         }
         
         delete shortPathNetwork;
-    };
+    }
     
     vector <DirectEdge>& edgeList = network->graph->edgeList;
     maxFlow = 0;
@@ -109,12 +116,15 @@ void DinicFlowFinder::calcMaxFlow() {
 bool DinicFlowFinder::getShortPathNetwork() {
     vector <DirectEdge>* shortPathEdges = new vector <DirectEdge>;
     vector <size_t>* edgeID = new vector <size_t>;
+    //double clock7 = clock();
     bfs.init(network);
     
     if(!bfs.run()) {
         return false;
     }
     
+    //std::cout << "bfs: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
+    //clock7 = clock();
     DirectEdge curEdge;
     vector <DirectEdge>& edgeList = network->graph->edgeList;
     for(size_t i = 0;i < edgeList.size(); ++i) {
@@ -127,16 +137,17 @@ bool DinicFlowFinder::getShortPathNetwork() {
     
     shortPathNetwork = new ShortPathNetwork(new Graph(network->graph->sizeVert, *shortPathEdges),
                                             network->source, network->sink, edgeID);
+     //std::cout << "init: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
     return true;
 }
 
 bool DinicFlowFinder::checkEdgeForShortPath(size_t edgeNumber, DirectEdge& edge) {
-    if(bfs.dist[edge.start] + 1 == bfs.dist[edge.finish] && (*network->flow)[edgeNumber] < edge.capacity && edge.start != network->sink) {
+    if((*bfs.dist)[edge.start] + 1 == (*bfs.dist)[edge.finish] && (*network->flow)[edgeNumber] < edge.capacity && edge.start != network->sink) {
         edge.capacity -= (*network->flow)[edgeNumber];
         return true;
     }
     
-    if(bfs.dist[edge.finish] + 1 == bfs.dist[edge.start] &&  (*network->flow)[edgeNumber] > 0 && edge.finish != network->sink) {
+    if((*bfs.dist)[edge.finish] + 1 == (*bfs.dist)[edge.start] &&  (*network->flow)[edgeNumber] > 0 && edge.finish != network->sink) {
         std::swap(edge.start, edge.finish);
         edge.capacity = (*network->flow)[edgeNumber];
         return true;
@@ -147,10 +158,17 @@ bool DinicFlowFinder::checkEdgeForShortPath(size_t edgeNumber, DirectEdge& edge)
 
 void Bfs::init(Network* network) {
     size_t sizeVert = network->graph->sizeVert;
-    used.clear();
-    used.resize(sizeVert, false);
-    dist.clear();
-    dist.resize(sizeVert, SIZE_T_MAX - 1);
+    if(!used) {
+        used = new vector <bool> (sizeVert);
+        dist = new vector <size_t> (sizeVert);
+    }
+    
+    vector <bool>::iterator usedIt = used->begin();
+    vector <size_t>::iterator distIt = dist->begin();
+    for(;usedIt != used->end(); ++usedIt, ++distIt) {
+        *usedIt = false;
+        *distIt = INF;
+    }
     this->network = network;
 }
 
@@ -164,8 +182,8 @@ bool Bfs::run() {
     size_t levelDist;
     DirectEdge curEdge;
     
-    dist[source] = 0;
-    used[source] = true;
+    (*dist)[source] = 0;
+    (*used)[source] = true;
     bfsQueue.push(std::make_pair(source, 0));
 
     while(!bfsQueue.empty()) {
@@ -182,9 +200,9 @@ bool Bfs::run() {
         for(size_t i = 0;i < (*(graph->outgoingList))[vert].size();++i) {
             numEdge = (*graph->outgoingList)[vert][i];
             curEdge = (graph->edgeList)[numEdge];
-            if(!used[curEdge.finish] && (*network->flow)[numEdge] < curEdge.capacity) {
-                used[curEdge.finish] = true;
-                dist[curEdge.finish] = levelDist;
+            if(!(*used)[curEdge.finish] && (*network->flow)[numEdge] < curEdge.capacity) {
+                (*used)[curEdge.finish] = true;
+                (*dist)[curEdge.finish] = levelDist;
                 bfsQueue.push(std::make_pair(curEdge.finish, levelDist));
             }
         }
@@ -192,15 +210,15 @@ bool Bfs::run() {
         for(size_t i = 0;i < (*graph->incomingList)[vert].size();++i) {
             numEdge = (*graph->incomingList)[vert][i];
             curEdge = (graph->edgeList)[numEdge];
-            if(!used[curEdge.start] && (*network->flow)[numEdge] > 0) {
-                used[curEdge.start] = true;
-                dist[curEdge.start] = levelDist;
+            if(!(*used)[curEdge.start] && (*network->flow)[numEdge] > 0) {
+                (*used)[curEdge.start] = true;
+                (*dist)[curEdge.start] = levelDist;
                 bfsQueue.push(std::make_pair(curEdge.start, levelDist));
             }
         }
     }
     
-    return used[sink];
+    return (*used)[sink];
 }
 
 ShortPathNetwork::ShortPathNetwork(Graph* graph, size_t source, size_t sink, vector <size_t>* edgeID):
@@ -214,16 +232,32 @@ ShortPathNetwork::~ShortPathNetwork() {
 }
 
 void LinkCutBlockFlowFinder::init(Network* network) {
-    trees.clear();
-    nodes.clear();
+    /*if(nodes.empty()) {
+        for(size_t i = 0;i < network->graph->sizeVert; ++i) {
+            nodes.push_back(new Node(i));
+            trees.push_back(new SplayTree(nodes[i]));
+        }
+       // vertexInShortPathNetwork->resize(network->graph->sizeVert);
+        return;
+    }*/
+    
     for(size_t i = 0;i < network->graph->sizeVert; ++i) {
-        nodes.push_back(new Node(i));
-        trees.push_back(new SplayTree(nodes[i]));
+            nodes.push_back(new Node(i, INF));
+            trees.push_back(new SplayTree(nodes[i]));
     }
     
     source = network->source;
     sink = network->sink;
 }
+
+//void LinkCutBlockFlowFinder::clearTree() {
+//    for(size_t i = 0;i < nodes.size(); ++i) {
+//        delete nodes[i];
+//        delete trees[i];
+//        nodes[i] = new Node(i);
+//        trees[i] = new SplayTree(nodes[i]);
+//    }
+//}
 
 void LinkCutBlockFlowFinder::clearTree() {
     for(size_t i = 0;i < nodes.size(); ++i) {
@@ -231,15 +265,14 @@ void LinkCutBlockFlowFinder::clearTree() {
         nodes[i]->parent = nodes[i]->link = nullptr;
         nodes[i]->treePtr = trees[i];
         nodes[i]->sizeOfSubtree = 1;
-        //nodes[i]->reverseFlag = false;
         nodes[i]->edgeWeight = nodes[i]->removedWeightValue = 0;
-        nodes[i]->subtreeMinWeight = nodes[i]->subtreeSumWeight = 0;
         trees[i]->root = nodes[i];
-}
+    }
 }
 
 void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
-    vector <size_t> curEdgeNumber(shortPathNetwork.graph->sizeVert, 0);
+    vector <size_t> curEdgeNumber(shortPathNetwork.graph->sizeVert, false);
+    vector <bool> badVert(shortPathNetwork.graph->sizeVert,0);
     vector <vector <size_t> >* outEdges = shortPathNetwork.graph->outgoingList;
     vector <DirectEdge>& edgeList = shortPathNetwork.graph->edgeList;
     //vector <size_t> startCapacity(edgeList.size());
@@ -252,6 +285,8 @@ void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
         (*shortPathNetwork.flow)[i] = edgeList[i].capacity;
     }
     
+    double clock7 = clock();
+    
     while(1) {
         if((vertex = linkCut.findRoot(nodes[source])->key) != sink) {
             if(curEdgeNumber[vertex] != (*outEdges)[vertex].size()) {
@@ -259,6 +294,7 @@ void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
  
                 linkCut.setWeight(nodes[vertex], edgeList[(*outEdges)[vertex][curEdgeNumber[vertex]]].capacity);
                 linkCut.link(nodes[vertex], nodes[nextVert]);
+                linkCut.setWeight(linkCut.findRoot(nodes[source]), INF);
                 edgeInsideFlag[vertex] = true;
                 continue;
             } else {
@@ -269,6 +305,7 @@ void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
                     prevVert = prevInPath(nodes[source])->key;
                     linkCut.cut(nodes[prevVert], nodes[vertex]);
                     edgeList[(*outEdges)[prevVert][curEdgeNumber[prevVert]]].capacity = linkCut.getEdgeWeight(nodes[prevVert]);
+                    linkCut.setWeight(nodes[prevVert], INF);
                     ++curEdgeNumber[prevVert];
                     edgeInsideFlag[prevVert] = false;
                 }
@@ -280,7 +317,8 @@ void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
             while(linkCut.getEdgeWeight(minEdge = linkCut.getMinEdge(nodes[source])) == 0) {
                 minVert = minEdge->key;
                 edgeList[(*outEdges)[minVert][curEdgeNumber[minVert]]].capacity = 0;
-                linkCut.cut(nodes[minVert], nextInPath(nodes[minVert]));
+                linkCut.cut(nodes[minVert], nodes[edgeList[(*outEdges)[minVert][curEdgeNumber[minVert]]].finish]);
+                linkCut.setWeight(nodes[minVert], INF);
                 ++curEdgeNumber[minVert];
                 edgeInsideFlag[minVert] = false;
                 if(minVert == source) {
@@ -290,14 +328,16 @@ void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
         }
     }
     
+    std::cout << "block: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
+    
     DirectEdge curEdge;
     for(size_t i = 0;i < shortPathNetwork.flow->size(); ++i) {
         curEdge = edgeList[i];
         if(curEdgeNumber[curEdge.start] != (*outEdges)[curEdge.start].size()
            && (*outEdges)[curEdge.start][curEdgeNumber[curEdge.start]] == i && edgeInsideFlag[curEdge.start]) {
-            (*shortPathNetwork.flow)[i] = (*shortPathNetwork.flow)[i] - linkCut.getEdgeWeight(nodes[edgeList[i].start]);
+            (*shortPathNetwork.flow)[i] -= linkCut.getEdgeWeight(nodes[edgeList[i].start]);
         } else {
-            (*shortPathNetwork.flow)[i] = (*shortPathNetwork.flow)[i] - edgeList[i].capacity;
+            (*shortPathNetwork.flow)[i] -= edgeList[i].capacity;
         }
     }
     
@@ -307,32 +347,4 @@ void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
 Node* LinkCutBlockFlowFinder::prevInPath(Node* source) {
     linkCut.expose(linkCut.findRoot(source));
     return linkCut.leftest(linkCut.supportRoot(source));
-}
-
-Node* LinkCutBlockFlowFinder::nextInPath(Node* vertex) {
-    if(!vertex->leftChild && !vertex->parent) {
-        return vertex->link;
-    }
-    
-    Node* next;
-    
-    if(vertex->leftChild) {
-        next = vertex->leftChild;
-    
-        while(next && next->rightChild) {
-            next = next->rightChild;
-        }
-    } else {
-        next = vertex->parent;
-        while(next && vertex == next->leftChild) {
-            vertex = next;
-            next = next->parent;
-        }
-        
-        if(!next) {
-            next = vertex->link;
-        }
-    }
-    linkCut.supportRoot(next);
-    return next;
 }

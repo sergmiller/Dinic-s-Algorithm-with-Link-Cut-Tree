@@ -34,6 +34,8 @@
 		B912CFD11BCB2B25004B9F5A /* linkcuttree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linkcuttree.h; sourceTree = "<group>"; };
 		B912CFE61BCDB62A004B9F5A /* dinicmaxflow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dinicmaxflow.cpp; sourceTree = "<group>"; };
 		B912CFE81BCDB646004B9F5A /* dinicmaxflow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dinicmaxflow.h; sourceTree = "<group>"; };
+		B939A4C91BD1A1D4000FE8B6 /* input.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = input.txt; sourceTree = "<group>"; };
+		B9E37A4B1BD299D0000DC776 /* output.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = output.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,12 +69,14 @@
 			isa = PBXGroup;
 			children = (
 				B912CFC61BCB25DC004B9F5A /* main.cpp */,
+				B939A4C91BD1A1D4000FE8B6 /* input.txt */,
 				B912CFCD1BCB264D004B9F5A /* splaytree.h */,
 				B912CFCE1BCB267A004B9F5A /* splaytree.cpp */,
-				B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */,
 				B912CFD11BCB2B25004B9F5A /* linkcuttree.h */,
-				B912CFE61BCDB62A004B9F5A /* dinicmaxflow.cpp */,
+				B912CFD01BCB2B25004B9F5A /* linkcuttree.cpp */,
 				B912CFE81BCDB646004B9F5A /* dinicmaxflow.h */,
+				B912CFE61BCDB62A004B9F5A /* dinicmaxflow.cpp */,
+				B9E37A4B1BD299D0000DC776 /* output.txt */,
 			);
 			name = "Dinic's Algorithm with Link-Cut-Tree";
 			path = "Dinic's Alogorithm with Link-Cut-Tree";

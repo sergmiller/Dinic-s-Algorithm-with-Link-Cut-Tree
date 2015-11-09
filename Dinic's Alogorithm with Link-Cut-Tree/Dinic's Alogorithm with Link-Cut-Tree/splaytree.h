@@ -14,10 +14,14 @@
 class Node;
 class SplayTree;
 
+const size_t INF = 1e16;
+
 size_t getSize(Node* vertex);
 size_t getMin(Node* vertex);
 size_t getSum(Node* vertex);
 void removeWeight(size_t value, Node* vertex);
+void updateTreeSize(Node* vertex);
+
 
 class Node{
 public:
@@ -25,7 +29,6 @@ public:
     size_t key;
     size_t edgeWeight;
     size_t subtreeMinWeight;
-    size_t subtreeSumWeight;
     size_t removedWeightValue;
     //bool reverseFlag;
     Node* leftChild;
@@ -55,7 +58,6 @@ public:
     ~SplayTree();
     
     void insert(int key, size_t position);
-    void updateTreeSize(Node* vertex);
     void remove(size_t position);
     void merge(SplayTree* addedTree); //added tree is right merged tree
     SplayTree* split(size_t position); //returned tree is tight splited tree

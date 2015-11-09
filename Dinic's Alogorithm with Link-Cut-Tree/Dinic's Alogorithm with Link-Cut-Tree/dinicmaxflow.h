@@ -40,8 +40,8 @@ public:
 class Graph
 {
 public:
-    vector <vector <size_t> > *outgoingList = nullptr; //lists of numbers of edges that outgoing and incoming in vertex
-    vector <vector <size_t> > *incomingList = nullptr;
+    vector <vector <size_t> > *outgoingList; //lists of numbers of edges that outgoing and incoming in vertex
+    vector <vector <size_t> > *incomingList;
     vector <DirectEdge>& edgeList; //full info about edge
     size_t sizeVert; //total quantity of verticies and edges
     size_t sizeEdge;
@@ -65,8 +65,8 @@ public:
 
 class Bfs{
 public:
-    vector <bool> used;
-    vector <size_t> dist;
+    vector <bool>* used;
+    vector <size_t>* dist;
     Network* network;
     void init(Network* network);
     bool run();
@@ -82,9 +82,10 @@ public:
 
 class DinicFlowFinder : public FlowFinder {
 private:
-    ShortPathNetwork* shortPathNetwork = nullptr;
-    BlockFlowFinder* blockFlowFinder = nullptr;
+    ShortPathNetwork* shortPathNetwork;
+    BlockFlowFinder* blockFlowFinder;
 public:
+    double sumTime;
     DinicFlowFinder();
     DinicFlowFinder(BlockFlowFinder* blockFlowFinder);
     void calcMaxFlow();
@@ -96,7 +97,7 @@ public:
 
 class ShortPathNetwork : public Network{
 public:
-    vector <size_t>* edgeID = nullptr;
+    vector <size_t>* edgeID;
     ShortPathNetwork(Graph* graph, size_t source, size_t sink, vector<size_t>* edgeID);
     ~ShortPathNetwork();
     void updateShortPathNetwork();
@@ -119,9 +120,8 @@ private:
 public:
     void clearTree();
     void init(Network* network);
-    void findBlockFlow(ShortPathNetwork& shortPathNetwork);
     Node* prevInPath(Node* source);
-    Node* nextInPath(Node* vertex);
+    void findBlockFlow(ShortPathNetwork& shortPathNetwork);
 };
 
 //bool getNewPath();//get new path in BFS algorithm from source to sink
