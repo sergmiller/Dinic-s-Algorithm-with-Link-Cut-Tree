@@ -25,9 +25,11 @@ void linkCutTest();
 
 int main() {
     ios_base::sync_with_stdio(false);
+    while(1) {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
-    solve();
+        solve();
+   }
     //linkCutTest();
     cout << "aaa" << endl;
     return 0;
@@ -35,7 +37,7 @@ int main() {
 
 void solve() {
     long long vert, edge, to, from, capacity;
-    vector <DirectEdge> edgeList;
+    vector <DirectEdge>* edgeList = new vector <DirectEdge>;
     DirectEdge curEdge;
     cin >> vert >> edge;
     // scanf("%lld%lld",&vert,&edge);
@@ -48,15 +50,15 @@ void solve() {
         curEdge.start = to;
         curEdge.finish = from;
         curEdge.capacity = capacity;
-        edgeList.push_back(curEdge);
+        edgeList->push_back(curEdge);
     }
     
     //cout <<"OK" << endl;
     
-    Graph graph(vert, edgeList);
+    //Graph graph(vert, edgeList);
     LinkCutBlockFlowFinder linkCutBlockflowFinder;
     DinicFlowFinder dinicFlowFinder(&linkCutBlockflowFinder);
-    Network network(&graph, 0, vert - 1);
+    Network network(new Graph(vert,*edgeList), 0, vert - 1);
     double clock7 = clock();
     network.getMaxFlow(dinicFlowFinder);
     std::cout << "end: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;

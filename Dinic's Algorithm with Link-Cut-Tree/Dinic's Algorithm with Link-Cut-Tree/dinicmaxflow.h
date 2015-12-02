@@ -120,6 +120,7 @@ private:
     size_t source;
     size_t sink;
 public:
+    ~LinkCutBlockFlowFinder();
     void clearTree();
     void init(Network* network);
     Node* prevInPath(Node* source);

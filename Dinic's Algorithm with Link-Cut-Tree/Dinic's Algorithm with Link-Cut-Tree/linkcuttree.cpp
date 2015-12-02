@@ -100,7 +100,7 @@ Node* LinkCutTree::expose(Node* vertex) {
 }
 
 Node* LinkCutTree::getMinEdge(Node* vertex) {
-    expose(vertex);
+    //expose(vertex);
     //expose(findRoot(vertex));
     supportRoot(vertex);
     //vertex->push();
@@ -116,28 +116,28 @@ Node* LinkCutTree::findLeftestMin(size_t minValue, Node* vertex) {
     
     if(vertex->edgeWeight == minValue) {
         //expose(vertex);
-        return supportRoot(vertex);
+        return vertex;
     }
     
     return findLeftestMin(minValue, vertex->rightChild);
 }
 
 void LinkCutTree::setWeight(Node* vertex, size_t weight) {
-    supportRoot(vertex);
+    //supportRoot(vertex);
     vertex->edgeWeight = weight;
     updateTreeSize(vertex);
     //expose(vertex);
 }
 
 void LinkCutTree::removeWeightInPath(size_t added, Node* vertex) {
-    expose(vertex);
+    //expose(vertex);
     //expose(findRoot(vertex));
-    supportRoot(vertex);
+    //supportRoot(vertex);
     removeWeight(added, vertex);
 }
 
 size_t LinkCutTree::getEdgeWeight(Node* vertex) {
-    supportRoot(vertex);
+    //supportRoot(vertex);
     vertex->push();
     size_t edgeWeight = vertex->edgeWeight;
     //expose(vertex);

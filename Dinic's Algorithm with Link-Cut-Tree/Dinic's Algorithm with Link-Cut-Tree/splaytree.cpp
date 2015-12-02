@@ -36,7 +36,7 @@ void Node::recursiveDelete() {
         rightChild->recursiveDelete();
     }
     
-    this->~Node();
+    delete this;
 }
 
 void removeWeight(size_t value, Node* vertex) {
@@ -251,7 +251,8 @@ void SplayTree::insert(int key, size_t position) {
     
     rightTree->root = nullptr;
     
-    rightTree->~SplayTree();
+    delete rightTree;
+    rightTree = nullptr;
 }
 
 void SplayTree::merge(SplayTree* addedTree) {
@@ -263,6 +264,8 @@ void SplayTree::merge(SplayTree* addedTree) {
     if(!root) {
         root = addedTree->root;
         addedTree->root = nullptr;
+        delete addedTree;
+        addedTree = nullptr;
         return;
     }
     
@@ -273,6 +276,8 @@ void SplayTree::merge(SplayTree* addedTree) {
     
     root->rightChild = addedTree->root;
     addedTree->root = nullptr;
+    delete addedTree;
+    addedTree = nullptr;
     keepParent(root);
 }
 
@@ -302,6 +307,6 @@ void SplayTree::remove(size_t position) {
     
     updateTreeSize(root);
     
-    leftTree->~SplayTree();
-    rightTree->~SplayTree();
+    delete leftTree;
+    delete rightTree;
 }

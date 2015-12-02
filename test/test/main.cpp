@@ -5,12 +5,16 @@
 //  Created by Сергей Миллер on 10.10.15.
 //  Copyright © 2015 Сергей Миллер. All rights reserved.
 //
+//!
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cstdlib>
 #include <queue>
 #include <algorithm>
+#include <cassert>
+#define nullptr NULL
 
 
 //#define SIZE_T_MAX 1e15
@@ -23,56 +27,57 @@ class SplayTree;
 
 const size_t INF = 1e16;
 
-size_t getSize(Node* vertex);
-size_t getMin(Node* vertex);
-size_t getSum(Node* vertex);
-void removeWeight(size_t value, Node* vertex);
-void updateTreeSize(Node* vertex);
-
-
 class Node{
 public:
+    static void removeWeight(size_t value, Node* vertex);
+    static void updateNodeParams(Node* vertex);
+    static void recursiveDelete(Node* vertex);
+    static void push(Node* vertex);
+    
+    static size_t getSize(Node* vertex);
+    static size_t getMin(Node* vertex);
+    static size_t getSum(Node* vertex);
+    
     Node(size_t key, size_t weight = 0);
+    
     size_t key;
     size_t edgeWeight;
+    size_t sizeOfSubtree;
     size_t subtreeMinWeight;
     size_t removedWeightValue;
-    //bool reverseFlag;
+    
     Node* leftChild;
     Node* rightChild;
     Node* parent;
     Node* link;
-    size_t sizeOfSubtree;
-    SplayTree* treePtr;
     
-    void push();
-    //void reverse();
-    //void removeValue(size_t value, Node* vertex);
-    //void reverse(Node* vertex);
-    void recursiveDelete();
+    SplayTree* treePtr;
 };
 
 class SplayTree
 {
+    friend class LinkCutTree;
 private:
-    Node* find(size_t position, Node* vertex);
-    void keepParent(Node* vertex);
-    void setParent(Node* parent, Node* vertex);
-    void rotate(Node* parent, Node* vertex);
+    Node* _find(size_t position, Node* vertex);
+    void _keepParent(Node* vertex);
+    void _setParent(Node* parent, Node* vertex);
+    void _rotate(Node* parent, Node* vertex);
+    void _merge(SplayTree* addedTree); //added tree is right merged tree
+    SplayTree* _split(size_t position); //returned tree is tight splited tree
+    
+    Node* _root;
 public:
-    Node* root;
     SplayTree(Node* root);
     ~SplayTree();
     
-    void insert(int key, size_t position);
-    void remove(size_t position);
-    void merge(SplayTree* addedTree); //added tree is right merged tree
-    SplayTree* split(size_t position); //returned tree is tight splited tree
     Node* find(size_t position);
+    
+    static SplayTree* merge(SplayTree* leftTree, SplayTree* rightTree);
+    static std::pair<SplayTree*, SplayTree*> split(SplayTree* tree,size_t position);
     
     void splay(Node* vertex);
     
-    Node* getRoot() { return root; };
+    Node* getRoot() { return _root; };
 };
 
 
@@ -80,103 +85,83 @@ public:
 
 
 
-Node::Node(size_t key, size_t edgeWeight) {
-    this->key = key;
-    sizeOfSubtree = 1;
-    leftChild = nullptr;
-    rightChild = nullptr;
-    parent = nullptr;
-    link = nullptr;
-    subtreeMinWeight = edgeWeight;
-    removedWeightValue = 0;
-    sizeOfSubtree = 1;
-    treePtr = nullptr;
-    
-    this->edgeWeight = edgeWeight;
+Node::Node(size_t key, size_t edgeWeight):key(key), sizeOfSubtree(1), leftChild(nullptr), rightChild(nullptr), parent(nullptr), link(nullptr), subtreeMinWeight(edgeWeight), removedWeightValue(0), treePtr(nullptr), edgeWeight(edgeWeight) {
 }
 
-void Node::recursiveDelete() {
-    if(leftChild) {
-        leftChild->recursiveDelete();
+void Node::recursiveDelete(Node* vertex) {
+    if(vertex) {
+        Node::recursiveDelete(vertex->leftChild);
+        Node::recursiveDelete(vertex->rightChild);
+        delete vertex;
     }
-    
-    if(rightChild) {
-        rightChild->recursiveDelete();
-    }
-    
-    this->~Node();
 }
 
-void removeWeight(size_t value, Node* vertex) {
+void Node::removeWeight(size_t value, Node* vertex) {
     if(vertex) {
         vertex->removedWeightValue += value;
     }
 }
 
-void Node::push() {
-    edgeWeight -= removedWeightValue;
-    removeWeight(removedWeightValue, leftChild);
-    removeWeight(removedWeightValue, rightChild);
-    removedWeightValue = 0;
-    updateTreeSize(this);
+void Node::push(Node* vertex) {
+    if(vertex) {
+        vertex->edgeWeight -= vertex->removedWeightValue;
+        Node::removeWeight(vertex->removedWeightValue, vertex->leftChild);
+        Node::removeWeight(vertex->removedWeightValue, vertex->rightChild);
+        vertex->removedWeightValue = 0;
+        Node::updateNodeParams(vertex);
+    }
 }
 
 SplayTree::SplayTree(Node* root) {
-    this->root = root;
+    _root = root;
     if(root) {
         root->treePtr = this;
     }
 }
 
 SplayTree::~SplayTree() {
-    if(root) {
-        root->recursiveDelete();
-    }
+    Node::recursiveDelete(_root);
 }
 
-void SplayTree::setParent(Node* vertex, Node* parent) {
+void SplayTree::_setParent(Node* vertex, Node* parent) {
     if(vertex) {
         vertex->parent = parent;
     }
 }
 
-size_t getSize(Node* vertex) {
+size_t Node::getSize(Node* vertex) {
     if(vertex) {
         return vertex->sizeOfSubtree;
     }
     return 0;
 }
 
-size_t getMin(Node* vertex) {
+size_t Node::getMin(Node* vertex) {
     if(vertex) {
         return vertex->subtreeMinWeight - vertex->removedWeightValue;
     }
     return INF;
 }
 
-void updateTreeSize(Node* vertex) {
+void Node::updateNodeParams(Node* vertex) {
     if(vertex) {
         vertex->sizeOfSubtree = getSize(vertex->leftChild) + getSize(vertex->rightChild) + 1;
         vertex->subtreeMinWeight = min(min(getMin(vertex->leftChild), getMin(vertex->rightChild)), vertex->edgeWeight);
     }
 }
 
-void SplayTree::keepParent(Node* vertex) {
-    setParent(vertex->leftChild, vertex);
-    setParent(vertex->rightChild, vertex);
-    updateTreeSize(vertex);
-    //vertex->push();
+void SplayTree::_keepParent(Node* vertex) {
+    _setParent(vertex->leftChild, vertex);
+    _setParent(vertex->rightChild, vertex);
+    Node::updateNodeParams(vertex);
 }
 
-void SplayTree::rotate(Node* parent, Node* vertex) {
+void SplayTree::_rotate(Node* parent, Node* vertex) {
     Node* grandParent = parent->parent;
     
-    if(grandParent) {
-        grandParent->push();
-    }
-    
-    parent->push();
-    vertex->push();
+    Node::push(grandParent);
+    Node::push(parent);
+    Node::push(vertex);
     
     if(grandParent) {
         if(grandParent->leftChild == parent) {
@@ -194,64 +179,57 @@ void SplayTree::rotate(Node* parent, Node* vertex) {
         vertex->leftChild = parent;
     }
     
-    keepParent(parent);
-    keepParent(vertex);
+    _keepParent(parent);
+    _keepParent(vertex);
     
-    //updateTreeSize(vertex);
-    //updateTreeSize(grandParent);
-    
-    setParent (vertex, grandParent);
+    _setParent (vertex, grandParent);
 }
 
 void SplayTree::splay(Node* vertex){
-    if(!vertex->parent) {
-        root = vertex;
-        root->treePtr = this;
-        return;
+    while(true) {
+        if(!vertex->parent) {
+            _root = vertex;
+            _root->treePtr = this;
+            return;
+        }
+        
+        Node* parent = vertex->parent;
+        Node* grandParent = parent->parent;
+        
+        if(!grandParent) {
+            _rotate(parent, vertex);
+            _root = vertex;
+            _root->treePtr = this;
+            return;
+        }
+        
+        bool zigZigFlag = ((grandParent->leftChild == parent) == (parent->leftChild == vertex));
+        
+        if(zigZigFlag) {
+            _rotate(grandParent, parent);
+            _rotate(parent, vertex);
+        } else {
+            _rotate(parent, vertex);
+            _rotate(grandParent, vertex);
+        }
     }
-    
-    Node* parent = vertex->parent;
-    Node* grandParent = parent->parent;
-    
-    if(!grandParent) {
-        rotate(parent, vertex);
-        root = vertex;
-        root->treePtr = this;
-        return;
-    }
-    
-    //grandParent->push();
-    //parent->push();
-    //vertex->push();
-    
-    bool zigZigFlag = ((grandParent->leftChild == parent) == (parent->leftChild == vertex));
-    
-    if(zigZigFlag) {
-        rotate(grandParent, parent);
-        rotate(parent, vertex);
-    } else {
-        rotate(parent, vertex);
-        rotate(grandParent, vertex);
-    }
-    
-    splay(vertex);
-    return;
 }
 
 Node* SplayTree::find(size_t position) {
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
+    size_t treeSize = Node::getSize(_root);
     
     if(position >= treeSize) {
         return NULL;
         // throw std::out_of_range("out of range in SplayTree::find\n");
     }
     
-    return find(position, root);
+    return _find(position, _root);
 }
 
-Node* SplayTree::find(size_t position, Node* vertex) {
-    vertex->push();
-    size_t indexLeft = (vertex->leftChild ? vertex->leftChild->sizeOfSubtree : 0);
+Node* SplayTree::_find(size_t position, Node* vertex) {
+    Node::push(vertex);
+    
+    size_t indexLeft = Node::getSize(vertex->leftChild);
     
     if(position == indexLeft) {
         splay(vertex);
@@ -259,15 +237,25 @@ Node* SplayTree::find(size_t position, Node* vertex) {
     }
     
     if(position < indexLeft) {
-        return find(position, vertex->leftChild);
+        return _find(position, vertex->leftChild);
     }
     
-    return find(position - indexLeft - 1, vertex->rightChild);
+    return _find(position - indexLeft - 1, vertex->rightChild);
+}
+
+std::pair<SplayTree*, SplayTree*> SplayTree::split(SplayTree* tree,size_t position) {
+    SplayTree* leftTree = nullptr;
+    SplayTree* rightTree = nullptr;
+    if(tree) {
+        rightTree = tree->_split(position);
+        leftTree = tree;
+    }
+    return std::make_pair(leftTree, rightTree);
 }
 
 
-SplayTree* SplayTree::split(size_t position){
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
+SplayTree* SplayTree::_split(size_t position){
+    size_t treeSize = (_root ? _root->sizeOfSubtree : 0);
     
     if(position > treeSize) {
         return NULL;
@@ -278,173 +266,163 @@ SplayTree* SplayTree::split(size_t position){
         return new SplayTree(nullptr);
     }
     
-    Node* newRoot = find(position, root);
+    Node* newRoot = _find(position, _root);
     
     SplayTree* rightTree = new SplayTree(newRoot);
     
-    root = newRoot->leftChild;
+    _root = newRoot->leftChild;
     newRoot->leftChild = nullptr;
-    setParent(root, nullptr);
+    _setParent(_root, nullptr);
     
-    if(rightTree->root) {
-        rightTree->root->treePtr = rightTree;
-        rightTree->root->push();
+    if(rightTree->_root) {
+        rightTree->_root->treePtr = rightTree;
     }
     
-    if(root) {
-        root->push();
-    }
-    
-    // updateTreeSize(root);
-    //updateTreeSize(rightTree->root);
+    Node::push(rightTree->_root);
+    Node::push(_root);
     
     return rightTree;
 }
 
-void SplayTree::insert(int key, size_t position) {
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
-    
-    if(position > treeSize) {
-        return;
-        //    throw std::out_of_range("out of range in SplayTree::insert\n");
+SplayTree* SplayTree::merge(SplayTree* leftTree, SplayTree* rightTree) {
+    if(!leftTree) {
+        return rightTree;
     }
     
-    SplayTree* rightTree = split(position);
-    Node* newRoot = new Node(key);
-    newRoot->treePtr = this;
-    newRoot->leftChild = this->root;
-    newRoot->rightChild = rightTree->root;
-    root = newRoot;
-    keepParent(root);
+    leftTree->_merge(rightTree);
     
-    rightTree->root = nullptr;
-    
-    rightTree->~SplayTree();
+    return leftTree;
 }
 
-void SplayTree::merge(SplayTree* addedTree) {
-    if(!addedTree || !addedTree->root)
+void SplayTree::_merge(SplayTree* addedTree) {
+    if(!addedTree->_root)
     {
+        delete addedTree;
+        addedTree = nullptr;
+    }
+    
+    
+    if(!_root) {
+        _root = addedTree->_root;
+        addedTree->_root = nullptr;
+        delete addedTree;
+        addedTree = nullptr;
         return;
     }
     
-    if(!root) {
-        root = addedTree->root;
-        addedTree->root = nullptr;
-        return;
-    }
-    
-    find(root->sizeOfSubtree - 1);
+    find(_root->sizeOfSubtree - 1);
     addedTree->find(0);
     
-    root->push();
+    Node::push(_root);
     
-    root->rightChild = addedTree->root;
-    addedTree->root = nullptr;
-    keepParent(root);
+    _root->rightChild = addedTree->_root;
+    addedTree->_root = nullptr;
+    delete addedTree;
+    addedTree = nullptr;
+    _keepParent(_root);
 }
 
-void SplayTree::remove(size_t position) {
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
-    
-    if(position >= treeSize) {
-        return;
-        //throw std::out_of_range("out of range in SplayTree::remove\n");
-    }
-    
-    find(position);
-    SplayTree* leftTree = new SplayTree(root->leftChild);
-    SplayTree* rightTree = new SplayTree(root->rightChild);
-    
-    setParent(leftTree->root, nullptr);
-    setParent(rightTree->root, nullptr);
-    leftTree->merge(rightTree);
-    
-    delete root;
-    root = leftTree->root;
-    leftTree->root = nullptr;
-    
-    if(root) {
-        root->treePtr = this;
-    }
-    
-    updateTreeSize(root);
-    
-    leftTree->~SplayTree();
-    rightTree->~SplayTree();
-}
 //**********************************************************************************************
 class LinkCutTree {
+    friend class LinkCutBlockFlowFinder;
 private:
-    //std::vector <SplayTree>* trees;
-    //std::map <Node*, size_t> numberOfTree;
-    SplayTree* getTree(Node* vertex);
-    Node* cutout(Node* vertex);
-    Node* cleanUp(Node* vertex);
-    Node* getLca(Node* vertex1, Node* vertex2);
-    Node* findLeftestMin(size_t minValue, Node* vertex);
+    std::vector <Node> nodes;
+    
+    Node* _cutout(Node* vertex);
+    Node* _leftest(Node* vertex);
+    Node* _expose(Node* vertex);
+    Node* _cleanUp(Node* vertex);
+    Node* _liftUpToRoot(Node* vertex);   //it's splay current vertex
+    Node* _findLeftestMin(size_t minValue, Node* vertex);
 public:
     Node* lastExposed;
-    // LinkCutTree(std::vector<SplayTree>* trees);
+    LinkCutTree(size_t _size);
     ~LinkCutTree();
-    void makeTree(Node* vertex);
-    //void revert(Node* vertex);
-    void removeWeightInPath(size_t weight, Node* vertex);
-    void cut(Node* vertex, Node* parent);
-    void link(Node* treeRoot, Node* vertex);
-    void linkEdge(Node* vertex1, Node* vertex2);
-    void cutEdge(Node* vertex1, Node* vertex2);
-    void setWeight(Node* vertex, size_t weight);
-    size_t getEdgeWeight(Node* vertex);
-    size_t getDist(Node* vertex1, Node* vertex2);
-    Node* lca(Node* vertex1, Node* vertex2);
-    Node* supportRoot(Node* vertex);   //it's splay current vertex
-    Node* getMinEdge(Node* vertex);
-    Node* findRoot(Node* vertex);
-    Node* leftest(Node* root);
-    size_t dist(Node* vertex1, Node* vertex2);
-    size_t depth(Node* vertex);
     
-    Node* expose(Node* vertex);
+    void clearTrees();
+    
+    void removeWeightInPath(size_t weight, size_t ind);
+    void link(size_t indRoot, size_t indVert);
+    void cut(size_t indVert, size_t indParent);
+    void setWeight(size_t indVert, size_t weight);
+    
+    size_t getEdgeWeight(size_t indVert);
+    Node* prevInPath(size_t ind);
+    Node* getMinEdge(size_t ind);
+    Node* findRoot(size_t ind);
 };
 
 //**********************************************************************************************
-
+LinkCutTree::LinkCutTree(size_t sizeVert){
+    nodes.resize(sizeVert, Node(0));
+    for(size_t i = 0;i < nodes.size(); ++i) {
+        new SplayTree(&nodes[i]);
+        nodes[i].key = i;
+    }
+}
 
 LinkCutTree::~LinkCutTree() {
-}
-
-void LinkCutTree::link(Node* treeRoot, Node* vertex) {
-    treeRoot->link = vertex;
-    expose(treeRoot);
-}
-
-void LinkCutTree::cut(Node* vertex, Node* parent) {
-    expose(parent);
-    vertex->link = nullptr;
-    //expose(vertex);
-}
-
-Node* LinkCutTree::findRoot(Node* vertex) {
-    if(vertex != lastExposed) {
-        expose(vertex);
+    for(size_t i = 0;i < nodes.size(); ++i) {
+        if(nodes[i].parent == nullptr) {
+            SplayTree* buff = nodes[i].treePtr;
+            //assert(buff->_root = &nodes[i]);
+            buff->_root = nullptr;
+            delete buff;
+        }
     }
-    return leftest(supportRoot(vertex));
 }
 
-Node* LinkCutTree::cleanUp(Node* vertex) {
+void LinkCutTree::clearTrees() {
+    for(size_t i = 0;i < nodes.size(); ++i) {
+        if(nodes[i].parent != nullptr) {
+            nodes[i] = Node(i,0);
+            nodes[i].treePtr = new SplayTree(&nodes[i]);
+        } else {
+            SplayTree* buff = nodes[i].treePtr;
+            nodes[i] =  Node(i,0);
+            nodes[i].treePtr = buff;
+            //buff->_root = &nodes[i];
+        }
+    }
+}
+
+void LinkCutTree::link(size_t indRoot, size_t indVert) {
+    Node* vertex = &nodes[indVert];
+    Node* treeRoot = &nodes[indRoot];
+    treeRoot->link = vertex;
+    _expose(treeRoot);
+}
+
+void LinkCutTree::cut(size_t indVert, size_t indParent) {
+    Node* vertex = &nodes[indVert];
+    Node* parent = &nodes[indParent];
+    _expose(parent);
+    vertex->link = nullptr;
+}
+
+Node* LinkCutTree::findRoot(size_t ind) {
+    Node* vertex = &nodes[ind];
+    if(vertex != lastExposed) {
+        _expose(vertex);
+    }
+    return _leftest(_liftUpToRoot(vertex));
+}
+
+Node* LinkCutTree::_cleanUp(Node* vertex) {
     Node* root;
+    
     if(vertex->parent) {
-        root = cleanUp(vertex->parent);
+        root = _cleanUp(vertex->parent);
     } else {
         root = vertex;
     }
     
-    vertex->push();
+    Node::push(vertex);
+    
     return root;
 }
 
-inline Node* LinkCutTree::supportRoot(Node* vertex) {
+inline Node* LinkCutTree::_liftUpToRoot(Node* vertex) {
     if(!vertex) {
         return nullptr;
     }
@@ -453,93 +431,84 @@ inline Node* LinkCutTree::supportRoot(Node* vertex) {
         return vertex;
     }
     
-    Node* root = cleanUp(vertex);
+    Node* root = _cleanUp(vertex);
     root->treePtr->splay(vertex);
     return vertex;
 }
 
-Node* LinkCutTree::leftest(Node* root) {
+Node* LinkCutTree::_leftest(Node* root) {
     return root->treePtr->find(0);
 }
 
-Node* LinkCutTree::cutout(Node* vertex) {
-    supportRoot(vertex);
-    SplayTree* left = vertex->treePtr;
-    SplayTree* right = left->split(getSize(vertex->leftChild) + 1);
+Node* LinkCutTree::_cutout(Node* vertex) {
+    _liftUpToRoot(vertex);
+    std::pair<SplayTree*, SplayTree*> splitedTrees = SplayTree::split(vertex->treePtr, Node::getSize(vertex->leftChild) + 1);
+    SplayTree* right = splitedTrees.second;
     if(right->getRoot()) {
         right->find(0)->link = vertex;
+    } else {
+        delete right;
     }
     return vertex;
 }
 
-//inline Node* LinkCutTree::expose(Node* vertex) {
-//    Node* memVert = vertex;
-//    Node* next;
-//    vertex = leftest(cutout(vertex));
-//    while(vertex->link != nullptr) {
-//        next = cutout(vertex->link);
-//        vertex->link = nullptr;
-//        (next->treePtr)->merge(vertex->treePtr);//<---!!!
-//        vertex = leftest(supportRoot(vertex));
-//    }
-//    return supportRoot(memVert);
-//}
-Node* LinkCutTree::expose(Node* vertex) {
+Node* LinkCutTree::_expose(Node* vertex) {
     lastExposed = vertex;
     Node* next;
-    vertex = leftest(supportRoot(cutout(vertex)));
+    vertex = _leftest(_liftUpToRoot(_cutout(vertex)));
     while(vertex->link != nullptr) {
-        next = cutout(vertex->link);
+        next = _cutout(vertex->link);
         vertex->link = nullptr;
-        (supportRoot(next)->treePtr)->merge(supportRoot(vertex)->treePtr);
-        vertex = leftest(supportRoot(vertex));
+        SplayTree::merge(_liftUpToRoot(next)->treePtr, _liftUpToRoot(vertex)->treePtr);
+        vertex = _leftest(_liftUpToRoot(vertex));
     }
     return vertex;
 }
 
-Node* LinkCutTree::getMinEdge(Node* vertex) {
-    expose(vertex);
-    //expose(findRoot(vertex));
-    supportRoot(vertex);
-    //vertex->push();
-    size_t minValue = getMin(vertex);
-    return findLeftestMin(minValue, vertex);
+Node* LinkCutTree::getMinEdge(size_t ind) {
+    Node* vertex = &nodes[ind];
+    _liftUpToRoot(vertex);
+    size_t minValue = Node::getMin(vertex);
+    return _findLeftestMin(minValue, vertex);
 }
 
-Node* LinkCutTree::findLeftestMin(size_t minValue, Node* vertex) {
-    vertex->push();
-    if(getMin(vertex->leftChild) == minValue) {
-        return findLeftestMin(minValue, vertex->leftChild);
+Node* LinkCutTree::_findLeftestMin(size_t minValue, Node* vertex) {
+    Node::push(vertex);
+    
+    if(Node::getMin(vertex->leftChild) == minValue) {
+        return _findLeftestMin(minValue, vertex->leftChild);
     }
     
     if(vertex->edgeWeight == minValue) {
-        //expose(vertex);
-        return supportRoot(vertex);
+        return vertex;
     }
     
-    return findLeftestMin(minValue, vertex->rightChild);
+    return _findLeftestMin(minValue, vertex->rightChild);
 }
 
-void LinkCutTree::setWeight(Node* vertex, size_t weight) {
-    supportRoot(vertex);
+void LinkCutTree::setWeight(size_t indVert, size_t weight) {
+    Node* vertex = &nodes[indVert];
+    _liftUpToRoot(vertex);
     vertex->edgeWeight = weight;
-    updateTreeSize(vertex);
-    //expose(vertex);
+    Node::updateNodeParams(vertex);
 }
 
-void LinkCutTree::removeWeightInPath(size_t added, Node* vertex) {
-    expose(vertex);
-    //expose(findRoot(vertex));
-    supportRoot(vertex);
-    removeWeight(added, vertex);
+void LinkCutTree::removeWeightInPath(size_t added, size_t indVert) {
+    Node::removeWeight(added, &nodes[indVert]);
 }
 
-size_t LinkCutTree::getEdgeWeight(Node* vertex) {
-    supportRoot(vertex);
-    vertex->push();
+size_t LinkCutTree::getEdgeWeight(size_t indVert) {
+    Node* vertex = &nodes[indVert];
+    _liftUpToRoot(vertex);
+    Node::push(vertex);
     size_t edgeWeight = vertex->edgeWeight;
-    //expose(vertex);
     return edgeWeight;
+}
+
+Node* LinkCutTree::prevInPath(size_t ind) {
+    Node* source = &nodes[ind];
+    _expose(findRoot(ind));
+    return _leftest(_liftUpToRoot(source));
 }
 
 //**********************************************************************************************
@@ -564,12 +533,12 @@ public:
 class Graph
 {
 public:
-    vector <vector <size_t> > *outgoingList; //lists of numbers of edges that outgoing and incoming in vertex
-    vector <vector <size_t> > *incomingList;
+    vector <vector <size_t> >& outgoingList; //lists of numbers of edges that outgoing and incoming in vertex
+    vector <vector <size_t> >& incomingList;
     vector <DirectEdge>& edgeList; //full info about edge
     size_t sizeVert; //total quantity of verticies and edges
     size_t sizeEdge;
-    Graph(size_t vertices, vector <DirectEdge> &edges);  //get graph from list pairs of vertices
+    Graph(size_t vertices, vector <DirectEdge>& edges);  //get graph from list pairs of vertices
     
     ~Graph();
 };
@@ -577,23 +546,37 @@ public:
 class Network
 {
 public:
-    vector <size_t> *flow;  //current flow in each edge
+    long long maxFlow;
+    vector <size_t> flow;  //current flow in each edge
     size_t source;    //source and sink in Network
     size_t sink;
     Graph *graph;
     Network(Graph *graph, size_t source, size_t sink);
     ~Network();
     size_t getMaxFlow(FlowFinder& flowFinder);   //workfunction
+    
 };
-
 
 class Bfs{
 public:
     Bfs();
+    ~Bfs();
     vector <bool>* used;
     vector <size_t>* dist;
+    queue <pair <size_t, size_t> > bfsQueue;
+    
+    Graph* graph;
+    size_t source;
+    size_t sink;
+    size_t vert;
+    size_t numEdge;
+    size_t levelDist;
+    DirectEdge curEdge;
+    
     Network* network;
     void init(Network* network);
+    void checkOutgoingEdges();
+    void checkIncomingEdges();
     bool run();
 };
 
@@ -601,8 +584,9 @@ class FlowFinder {
 public:
     long long maxFlow;
     Network* network;
+    //virtual ~FlowFinder() = 0;
     virtual void initFlowFinder(Network* network) = 0;
-    virtual void calcMaxFlow() = 0;
+    virtual void getMaxFlow() = 0;
 };
 
 class DinicFlowFinder : public FlowFinder {
@@ -610,9 +594,10 @@ private:
     ShortPathNetwork* shortPathNetwork;
     BlockFlowFinder* blockFlowFinder;
 public:
-    double sumTime;
-    DinicFlowFinder();
     DinicFlowFinder(BlockFlowFinder* blockFlowFinder);
+    ~DinicFlowFinder();
+    void getMaxFlow();
+    void updateFlow();
     void calcMaxFlow();
     void initFlowFinder(Network* network);
     bool getShortPathNetwork();
@@ -622,83 +607,75 @@ public:
 
 class ShortPathNetwork : public Network{
 public:
-    vector <size_t>* edgeID;
-    ShortPathNetwork(Graph* graph, size_t source, size_t sink, vector<size_t>* edgeID);
+    vector <size_t>& edgeID;
+    ShortPathNetwork(Graph* graph, size_t source, size_t sink, vector<size_t>& edgeID);
     ~ShortPathNetwork();
     void updateShortPathNetwork();
 };
 
-
 class BlockFlowFinder {
 public:
-    virtual void init(Network* network) = 0;
-    virtual void findBlockFlow(ShortPathNetwork& shortPathNetwork) = 0;
+    //virtual ~BlockFlowFinder() = 0;
+    ShortPathNetwork* shortPathNetwork;
+    virtual void findBlockFlow() = 0;
 };
 
 class LinkCutBlockFlowFinder : public BlockFlowFinder {
 private:
+    //ShortPathNetwork* shortPathNetwork;
     LinkCutTree linkCut;
-    vector <SplayTree*> trees;
-    vector <Node*> nodes;
     size_t source;
     size_t sink;
 public:
-    void clearTree();
-    void init(Network* network);
-    Node* prevInPath(Node* source);
-    void findBlockFlow(ShortPathNetwork& shortPathNetwork);
+    LinkCutBlockFlowFinder(size_t sizeVert, size_t source, size_t sink);
+    ~LinkCutBlockFlowFinder();
+    void findBlockFlow();
 };
 
-
 //**********************************************************************************************
-Graph::Graph(size_t vertices, vector <DirectEdge>& edges):edgeList(edges)
+Graph::Graph(size_t vertices, vector <DirectEdge>& edges):sizeVert(vertices), sizeEdge(edges.size()), edgeList( *(new vector <DirectEdge>)), incomingList(*(new vector <vector <size_t> >(vertices))), outgoingList(*(new vector <vector <size_t> >(vertices)))
 {
-    sizeEdge = edges.size();
-    sizeVert = vertices;
+    edgeList = edges;
     DirectEdge curEdge;
-    outgoingList = new vector <vector <size_t> >(sizeVert);
-    incomingList = new vector <vector <size_t> >(sizeVert);
     for(size_t i = 0;i < edges.size(); ++i)
     {
         curEdge = edgeList[i];
-        (*outgoingList)[curEdge.start].push_back(i);
-        (*incomingList)[curEdge.finish].push_back(i);
+        outgoingList[curEdge.start].push_back(i);
+        incomingList[curEdge.finish].push_back(i);
     }
 }
 
 Graph::~Graph()
 {
-    delete incomingList;
-    delete outgoingList;
+    delete &incomingList;
+    delete &outgoingList;
+    delete &edgeList;
 }
 
 
-Network::Network(Graph *graph, size_t source, size_t sink)
+Network::Network(Graph *graph, size_t source, size_t sink): graph(graph), sink(sink), source(source), maxFlow(0)
 {
-    flow = new vector <size_t>(graph->sizeEdge, 0);
-    this->graph = graph;
-    this->source = source;
-    this->sink = sink;
+    flow.resize(graph->sizeEdge, 0);
 }
 
 Network::~Network()
 {
-    delete flow;
+    delete graph;
+    //delete flow;
 }
 
 size_t Network::getMaxFlow(FlowFinder& flowFinder) {
     flowFinder.initFlowFinder(this);
-    flowFinder.calcMaxFlow();
-    return flowFinder.maxFlow;
+    flowFinder.getMaxFlow();
+    return maxFlow = flowFinder.maxFlow;
 }
 
-DinicFlowFinder::DinicFlowFinder() {
-    DinicFlowFinder(linkCutBlockFlowFinder);
+DinicFlowFinder::DinicFlowFinder(BlockFlowFinder* blockFlowFinder): blockFlowFinder(blockFlowFinder), shortPathNetwork(nullptr)
+{
 }
 
-DinicFlowFinder::DinicFlowFinder(BlockFlowFinder* blockFlowFinder) {
-    this->blockFlowFinder = blockFlowFinder;
-    shortPathNetwork = nullptr;
+DinicFlowFinder::~DinicFlowFinder() {
+    blockFlowFinder->~BlockFlowFinder();
 }
 
 void DinicFlowFinder::initFlowFinder(Network* network) {
@@ -707,82 +684,85 @@ void DinicFlowFinder::initFlowFinder(Network* network) {
 }
 
 void DinicFlowFinder::calcMaxFlow() {
-    blockFlowFinder->init(network);
-    while(getShortPathNetwork()) {
-        double clock7 = clock();
-        blockFlowFinder->findBlockFlow(*shortPathNetwork);
-        //std::cout << "aft: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
-        sumTime += (clock() - clock7)/CLOCKS_PER_SEC;
-        DirectEdge originalEdge;
-        DirectEdge imageEdge;
-        vector <DirectEdge>& originEdgeList = network->graph->edgeList;
-        vector <DirectEdge>& shortPathEdgeList = shortPathNetwork->graph->edgeList;
-        
-        for(size_t i = 0;i < shortPathNetwork->edgeID->size(); ++i) {
-            originalEdge = originEdgeList[(*shortPathNetwork->edgeID)[i]];
-            imageEdge = shortPathEdgeList[i];
-            if(originalEdge.start == imageEdge.start) {
-                (*network->flow)[(*shortPathNetwork->edgeID)[i]] += (*shortPathNetwork->flow)[i];
-            } else {
-                (*network->flow)[(*shortPathNetwork->edgeID)[i]] -= (*shortPathNetwork->flow)[i];
-            }
+    vector <DirectEdge>& edgeList = network->graph->edgeList;
+    vector <size_t>& flow = network->flow;
+    size_t source = network->source;
+    
+    for(size_t i = 0;i < edgeList.size(); ++i) {
+        if(edgeList[i].start == source) {
+            maxFlow += flow[i];
         }
+        if(edgeList[i].finish == source) {
+            maxFlow -= flow[i];
+        }
+    }
+}
+
+void DinicFlowFinder::updateFlow() {
+    DirectEdge originalEdge;
+    DirectEdge imageEdge;
+    vector <DirectEdge>& originEdgeList = network->graph->edgeList;
+    vector <DirectEdge>& shortPathEdgeList = shortPathNetwork->graph->edgeList;
+    
+    for(size_t i = 0;i < shortPathNetwork->edgeID.size(); ++i) {
+        originalEdge = originEdgeList[shortPathNetwork->edgeID[i]];
+        imageEdge = shortPathEdgeList[i];
+        if(originalEdge.start == imageEdge.start) {
+            network->flow[shortPathNetwork->edgeID[i]] += shortPathNetwork->flow[i];
+        } else {
+            network->flow[shortPathNetwork->edgeID[i]] -= shortPathNetwork->flow[i];
+        }
+    }
+}
+
+void DinicFlowFinder::getMaxFlow() {
+    while(getShortPathNetwork()) {
+        blockFlowFinder->shortPathNetwork = shortPathNetwork;
+        blockFlowFinder->findBlockFlow();
         
+        updateFlow();
         delete shortPathNetwork;
     }
     
-    vector <DirectEdge>& edgeList = network->graph->edgeList;
-    maxFlow = 0;
-    
-    for(size_t i = 0;i < edgeList.size(); ++i) {
-        if(edgeList[i].start == network->source) {
-            maxFlow += (*network->flow)[i];
-        }
-        if(edgeList[i].finish == network->source) {
-            maxFlow -= (*network->flow)[i];
-        }
-    }
+    calcMaxFlow();
     
     return;
 }
 
 bool DinicFlowFinder::getShortPathNetwork() {
-    vector <DirectEdge>* shortPathEdges = new vector <DirectEdge>;
+    vector <DirectEdge> shortPathEdges;// = new vector <DirectEdge>;
     vector <size_t>* edgeID = new vector <size_t>;
-    //double clock7 = clock();
+    
     bfs.init(network);
     
     if(!bfs.run()) {
         return false;
     }
     
-    //std::cout << "bfs: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
-    //clock7 = clock();
     DirectEdge curEdge;
     vector <DirectEdge>& edgeList = network->graph->edgeList;
     for(size_t i = 0;i < edgeList.size(); ++i) {
         curEdge = edgeList[i];
         if(checkEdgeForShortPath(i, curEdge)) {
             edgeID->push_back(i);
-            shortPathEdges->push_back(curEdge);
+            shortPathEdges.push_back(curEdge);
         }
     }
     
-    shortPathNetwork = new ShortPathNetwork(new Graph(network->graph->sizeVert, *shortPathEdges),
-                                            network->source, network->sink, edgeID);
-    //std::cout << "init: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
+    shortPathNetwork = new ShortPathNetwork(new Graph(network->graph->sizeVert, shortPathEdges),
+                                            network->source, network->sink, *edgeID);
     return true;
 }
 
 bool DinicFlowFinder::checkEdgeForShortPath(size_t edgeNumber, DirectEdge& edge) {
-    if((*bfs.dist)[edge.start] + 1 == (*bfs.dist)[edge.finish] && (*network->flow)[edgeNumber] < edge.capacity && edge.start != network->sink) {
-        edge.capacity -= (*network->flow)[edgeNumber];
+    if((*bfs.dist)[edge.start] + 1 == (*bfs.dist)[edge.finish] && network->flow[edgeNumber] < edge.capacity && edge.start != network->sink) {
+        edge.capacity -= network->flow[edgeNumber];
         return true;
     }
     
-    if((*bfs.dist)[edge.finish] + 1 == (*bfs.dist)[edge.start] &&  (*network->flow)[edgeNumber] > 0 && edge.finish != network->sink) {
+    if((*bfs.dist)[edge.finish] + 1 == (*bfs.dist)[edge.start] &&  network->flow[edgeNumber] > 0 && edge.finish != network->sink) {
         std::swap(edge.start, edge.finish);
-        edge.capacity = (*network->flow)[edgeNumber];
+        edge.capacity = network->flow[edgeNumber];
         return true;
     }
     
@@ -792,6 +772,11 @@ bool DinicFlowFinder::checkEdgeForShortPath(size_t edgeNumber, DirectEdge& edge)
 Bfs::Bfs() {
     used = nullptr;
     dist = nullptr;
+}
+
+Bfs::~Bfs() {
+    delete used;
+    delete dist;
 }
 
 void Bfs::init(Network* network) {
@@ -810,15 +795,35 @@ void Bfs::init(Network* network) {
     this->network = network;
 }
 
+void Bfs::checkOutgoingEdges() {
+    for(size_t i = 0;i < graph->outgoingList[vert].size();++i) {
+        numEdge = graph->outgoingList[vert][i];
+        curEdge = (graph->edgeList)[numEdge];
+        if(!(*used)[curEdge.finish] && network->flow[numEdge] < curEdge.capacity) {
+            (*used)[curEdge.finish] = true;
+            (*dist)[curEdge.finish] = levelDist;
+            bfsQueue.push(std::make_pair(curEdge.finish, levelDist));
+        }
+    }
+}
+
+void Bfs::checkIncomingEdges() {
+    for(size_t i = 0;i < graph->incomingList[vert].size();++i) {
+        numEdge = graph->incomingList[vert][i];
+        curEdge = graph->edgeList[numEdge];
+        if(!(*used)[curEdge.start] && network->flow[numEdge] > 0) {
+            (*used)[curEdge.start] = true;
+            (*dist)[curEdge.start] = levelDist;
+            bfsQueue.push(std::make_pair(curEdge.start, levelDist));
+        }
+    }
+}
+
 bool Bfs::run() {
-    queue <pair <size_t, size_t> > bfsQueue;
-    Graph* graph = network->graph;
-    size_t source = network->source;
-    size_t sink = network->sink;
-    size_t vert;
-    size_t numEdge;
-    size_t levelDist;
-    DirectEdge curEdge;
+    
+    graph = network->graph;
+    source = network->source;
+    sink = network->sink;
     
     (*dist)[source] = 0;
     (*used)[source] = true;
@@ -835,126 +840,81 @@ bool Bfs::run() {
         
         ++levelDist;
         
-        for(size_t i = 0;i < (*(graph->outgoingList))[vert].size();++i) {
-            numEdge = (*graph->outgoingList)[vert][i];
-            curEdge = (graph->edgeList)[numEdge];
-            if(!(*used)[curEdge.finish] && (*network->flow)[numEdge] < curEdge.capacity) {
-                (*used)[curEdge.finish] = true;
-                (*dist)[curEdge.finish] = levelDist;
-                bfsQueue.push(std::make_pair(curEdge.finish, levelDist));
-            }
-        }
-        
-        for(size_t i = 0;i < (*graph->incomingList)[vert].size();++i) {
-            numEdge = (*graph->incomingList)[vert][i];
-            curEdge = (graph->edgeList)[numEdge];
-            if(!(*used)[curEdge.start] && (*network->flow)[numEdge] > 0) {
-                (*used)[curEdge.start] = true;
-                (*dist)[curEdge.start] = levelDist;
-                bfsQueue.push(std::make_pair(curEdge.start, levelDist));
-            }
-        }
+        checkOutgoingEdges();
+        checkIncomingEdges();
     }
     
     return (*used)[sink];
 }
 
-ShortPathNetwork::ShortPathNetwork(Graph* graph, size_t source, size_t sink, vector <size_t>* edgeID):
-Network(graph, source, sink){
-    this->edgeID = edgeID;
+ShortPathNetwork::ShortPathNetwork(Graph* graph, size_t source, size_t sink, vector <size_t>& edgeID):
+Network(graph, source, sink), edgeID(edgeID){
 }
 
 ShortPathNetwork::~ShortPathNetwork() {
-    if(edgeID)
-        delete edgeID;
+    delete &edgeID;
+    //delete graph;
 }
 
-void LinkCutBlockFlowFinder::init(Network* network) {
-    /*if(nodes.empty()) {
-     for(size_t i = 0;i < network->graph->sizeVert; ++i) {
-     nodes.push_back(new Node(i));
-     trees.push_back(new SplayTree(nodes[i]));
-     }
-     // vertexInShortPathNetwork->resize(network->graph->sizeVert);
-     return;
-     }*/
+LinkCutBlockFlowFinder::LinkCutBlockFlowFinder(size_t sizeVert, size_t source, size_t sink): linkCut(LinkCutTree(sizeVert)), source(source), sink(sink) {
+};
+
+LinkCutBlockFlowFinder::~LinkCutBlockFlowFinder() {
+    //delete &linkCut;
+}
+
+void LinkCutBlockFlowFinder::findBlockFlow() {
+    vector <size_t> curEdgeNumber(shortPathNetwork->graph->sizeVert, false);
+    vector <bool> edgeInsideTreeFlag(shortPathNetwork->graph->sizeVert, false);
+    vector <vector <size_t> >& outEdges = shortPathNetwork->graph->outgoingList;
+    vector <DirectEdge>& edgeList = shortPathNetwork->graph->edgeList;
+    vector <size_t>& flow = shortPathNetwork->flow;
     
-    for(size_t i = 0;i < network->graph->sizeVert; ++i) {
-        nodes.push_back(new Node(i, INF));
-        trees.push_back(new SplayTree(nodes[i]));
-    }
-    
-    source = network->source;
-    sink = network->sink;
-}
-
-//void LinkCutBlockFlowFinder::clearTree() {
-//    for(size_t i = 0;i < nodes.size(); ++i) {
-//        delete nodes[i];
-//        delete trees[i];
-//        nodes[i] = new Node(i);
-//        trees[i] = new SplayTree(nodes[i]);
-//    }
-//}
-
-void LinkCutBlockFlowFinder::clearTree() {
-    for(size_t i = 0;i < nodes.size(); ++i) {
-        nodes[i]->leftChild = nodes[i]->rightChild = nullptr;
-        nodes[i]->parent = nodes[i]->link = nullptr;
-        nodes[i]->treePtr = trees[i];
-        nodes[i]->sizeOfSubtree = 1;
-        nodes[i]->edgeWeight = nodes[i]->removedWeightValue = 0;
-        trees[i]->root = nodes[i];
-    }
-}
-
-void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
-    vector <size_t> curEdgeNumber(shortPathNetwork.graph->sizeVert, false);
-    vector <vector <size_t> >* outEdges = shortPathNetwork.graph->outgoingList;
-    vector <DirectEdge>& edgeList = shortPathNetwork.graph->edgeList;
-    vector <bool> edgeInsideFlag(shortPathNetwork.graph->sizeVert, false);
     size_t vertex;
     size_t nextVert;
     size_t prevVert;
     
     for(size_t i = 0;i < edgeList.size(); ++i) {
-        (*shortPathNetwork.flow)[i] = edgeList[i].capacity;
+        flow[i] = edgeList[i].capacity;
     }
     
-    while(1) {
-        if((vertex = linkCut.findRoot(nodes[source])->key) != sink) {
-            if(curEdgeNumber[vertex] != (*outEdges)[vertex].size()) {
-                nextVert = edgeList[(*outEdges)[vertex][curEdgeNumber[vertex]]].finish;
+    linkCut.clearTrees();
+    
+    while(true) {
+        if((vertex = linkCut.findRoot(source)->key) != sink) {
+            if(curEdgeNumber[vertex] != outEdges[vertex].size()) {
+                nextVert = edgeList[outEdges[vertex][curEdgeNumber[vertex]]].finish;
                 
-                linkCut.setWeight(nodes[vertex], edgeList[(*outEdges)[vertex][curEdgeNumber[vertex]]].capacity);
-                linkCut.link(nodes[vertex], nodes[nextVert]);
-                linkCut.setWeight(linkCut.findRoot(nodes[source]), INF);
-                edgeInsideFlag[vertex] = true;
+                linkCut.setWeight(vertex, edgeList[outEdges[vertex][curEdgeNumber[vertex]]].capacity);
+                linkCut.link(vertex, nextVert);
+                linkCut.findRoot(source);
+                linkCut.setWeight(linkCut.findRoot(source)->key, INF);
+                edgeInsideTreeFlag[vertex] = true;
                 continue;
             } else {
                 if(vertex == source) {
-                    edgeInsideFlag[source] = false;
+                    edgeInsideTreeFlag[source] = false;
                     break;
                 } else {
-                    prevVert = prevInPath(nodes[source])->key;
-                    linkCut.cut(nodes[prevVert], nodes[vertex]);
-                    edgeList[(*outEdges)[prevVert][curEdgeNumber[prevVert]]].capacity = linkCut.getEdgeWeight(nodes[prevVert]);
-                    linkCut.setWeight(nodes[prevVert], INF);
+                    prevVert = linkCut.prevInPath(source)->key;
+                    linkCut.cut(prevVert, vertex);
+                    edgeList[outEdges[prevVert][curEdgeNumber[prevVert]]].capacity = linkCut.getEdgeWeight(prevVert);
+                    linkCut.setWeight(prevVert, INF);
                     ++curEdgeNumber[prevVert];
-                    edgeInsideFlag[prevVert] = false;
+                    edgeInsideTreeFlag[prevVert] = false;
                 }
             }
         } else {
-            Node* minEdge = linkCut.getMinEdge(nodes[source]);
+            Node* minEdge = linkCut.getMinEdge(source);
             size_t minVert;
-            linkCut.removeWeightInPath(minEdge->edgeWeight, nodes[source]);
-            while(linkCut.getEdgeWeight(minEdge = linkCut.getMinEdge(nodes[source])) == 0) {
+            linkCut.removeWeightInPath(minEdge->edgeWeight, source);
+            while(linkCut.getEdgeWeight((minEdge = linkCut.getMinEdge(source))->key) == 0) {
                 minVert = minEdge->key;
-                edgeList[(*outEdges)[minVert][curEdgeNumber[minVert]]].capacity = 0;
-                linkCut.cut(nodes[minVert], nodes[edgeList[(*outEdges)[minVert][curEdgeNumber[minVert]]].finish]);
-                linkCut.setWeight(nodes[minVert], INF);
+                edgeList[outEdges[minVert][curEdgeNumber[minVert]]].capacity = 0;
+                linkCut.cut(minVert, edgeList[outEdges[minVert][curEdgeNumber[minVert]]].finish);
+                linkCut.setWeight(minVert, INF);
                 ++curEdgeNumber[minVert];
-                edgeInsideFlag[minVert] = false;
+                edgeInsideTreeFlag[minVert] = false;
                 if(minVert == source) {
                     break;
                 }
@@ -962,26 +922,18 @@ void LinkCutBlockFlowFinder::findBlockFlow(ShortPathNetwork& shortPathNetwork) {
         }
     }
     
-    //std::cout << "block: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
-    
     DirectEdge curEdge;
-    for(size_t i = 0;i < shortPathNetwork.flow->size(); ++i) {
+    for(size_t i = 0;i < flow.size(); ++i) {
         curEdge = edgeList[i];
-        if(curEdgeNumber[curEdge.start] != (*outEdges)[curEdge.start].size()
-           && (*outEdges)[curEdge.start][curEdgeNumber[curEdge.start]] == i && edgeInsideFlag[curEdge.start]) {
-            (*shortPathNetwork.flow)[i] -= linkCut.getEdgeWeight(nodes[edgeList[i].start]);
+        if(curEdgeNumber[curEdge.start] != outEdges[curEdge.start].size()
+           && outEdges[curEdge.start][curEdgeNumber[curEdge.start]] == i && edgeInsideTreeFlag[curEdge.start]) {
+            (flow)[i] -= linkCut.getEdgeWeight(edgeList[i].start);
         } else {
-            (*shortPathNetwork.flow)[i] -= edgeList[i].capacity;
+            (flow)[i] -= edgeList[i].capacity;
         }
     }
-    
-    clearTree();
 }
 
-Node* LinkCutBlockFlowFinder::prevInPath(Node* source) {
-    linkCut.expose(linkCut.findRoot(source));
-    return linkCut.leftest(linkCut.supportRoot(source));
-}
 //**********************************************************************************************
 
 void solve();
@@ -989,47 +941,51 @@ void linkCutTest();
 
 int main() {
     ios_base::sync_with_stdio(false);
-//    freopen("input.txt", "r", stdin);
-//    freopen("output.txt", "w", stdout);
-    solve();
-    //linkCutTest();
-    //cout << "aaa" << endl;
+    
+    //freopen("output.txt", "w", stdout);
+    while(1) {
+        solve();
+    }
     return 0;
 }
 
 void solve() {
+    freopen("input.txt", "r", stdin);
+    // freopen("output.txt", "w", stdout);
     long long vert, edge, to, from, capacity;
-    vector <DirectEdge> edgeList;
+    vector <DirectEdge> edgeList;// = *(new vector <DirectEdge>);
     DirectEdge curEdge;
     cin >> vert >> edge;
+    edgeList.resize(edge);
     // scanf("%lld%lld",&vert,&edge);
-    //cout << "OK" << endl;
     for(int i = 0;i < edge;++i) {
         cin >> to >> from >> capacity;
-        //     scanf("%lld%lld%lld",&to,&from,&capacity);
         --to;
         --from;
         curEdge.start = to;
         curEdge.finish = from;
         curEdge.capacity = capacity;
-        edgeList.push_back(curEdge);
+        edgeList[i] = curEdge;
     }
     
-    //cout <<"OK" << endl;
-    
-    Graph graph(vert, edgeList);
-    LinkCutBlockFlowFinder linkCutBlockflowFinder;
+    //Graph graph(vert, edgeList);
+    //LinkCutBlockFlowFinder* linkCutBlockFlowFinder = new LinkCutBlockFlowFinder(vert, 0, vert - 1);
+    //dinicFlowFinder(new LinkCutBlockFlowFinder(vert, 0, vert - 1));
+    //    Network network(new Graph(vert,edgeList), 0, vert - 1);
+    //    network.getMaxFlow(*(new DinicFlowFinder(new LinkCutBlockFlowFinder(vert, 0, vert - 1))));
+    //
+    //
+    Graph* graph = new Graph(vert, edgeList);
+    LinkCutBlockFlowFinder linkCutBlockflowFinder(vert, 0, vert - 1);
     DinicFlowFinder dinicFlowFinder(&linkCutBlockflowFinder);
-    Network network(&graph, 0, vert - 1);
+    Network network(graph, 0, vert - 1);
     network.getMaxFlow(dinicFlowFinder);
-    //std::cout << "end: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
-    //std::cout << "sum: " << dinicFlowFinder.sumTime << std::endl;
+    cout << network.maxFlow << endl;
+    //delete graph;
+    //delete graph;
     
-    //cout << "OK" << endl;
-    
-    cout << dinicFlowFinder.maxFlow << endl;
-    
-//    for(size_t i = 0;i < network.flow->size(); ++i) {
-//        cout << (*network.flow)[i] << endl;
-//    }
+    //    for(size_t i = 0;i < network.flow->size(); ++i) {
+    //        cout << (*network.flow)[i] << endl;
+    //    }
 }
+
