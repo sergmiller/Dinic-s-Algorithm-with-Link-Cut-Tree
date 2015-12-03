@@ -10,105 +10,88 @@
 #include <cstdio>
 #include <vector>
 
-using std::min;
 
-Node::Node(size_t key, size_t edgeWeight) {
-    this->key = key;
-    sizeOfSubtree = 1;
-    leftChild = nullptr;
-    rightChild = nullptr;
-    parent = nullptr;
-    link = nullptr;
-    subtreeMinWeight = edgeWeight;
-    removedWeightValue = 0;
-    sizeOfSubtree = 1;
-    treePtr = nullptr;
-    
-    this->edgeWeight = edgeWeight;
+Node::Node(size_t key, size_t edgeWeight):key(key), sizeOfSubtree(1), leftChild(nullptr), rightChild(nullptr), parent(nullptr), link(nullptr), subtreeMinWeight(edgeWeight), removedWeightValue(0), treePtr(nullptr), edgeWeight(edgeWeight) {
 }
 
-void Node::recursiveDelete() {
-    if(leftChild) {
-        leftChild->recursiveDelete();
+void Node::recursiveDelete(Node* vertex) {
+    if(vertex) {
+        Node::recursiveDelete(vertex->leftChild);
+        Node::recursiveDelete(vertex->rightChild);
+        delete vertex;
     }
-    
-    if(rightChild) {
-        rightChild->recursiveDelete();
-    }
-    
-    delete this;
 }
 
-void removeWeight(size_t value, Node* vertex) {
+void Node::removeWeight(size_t value, Node* vertex) {
     if(vertex) {
         vertex->removedWeightValue += value;
     }
 }
 
-void Node::push() {
-    edgeWeight -= removedWeightValue;
-    removeWeight(removedWeightValue, leftChild);
-    removeWeight(removedWeightValue, rightChild);
-    removedWeightValue = 0;
-    updateTreeSize(this);
+void Node::push(Node* vertex) {
+    if(vertex) {
+        vertex->edgeWeight -= vertex->removedWeightValue;
+        Node::removeWeight(vertex->removedWeightValue, vertex->leftChild);
+        Node::removeWeight(vertex->removedWeightValue, vertex->rightChild);
+        vertex->removedWeightValue = 0;
+        Node::updateNodeParams(vertex);
+    }
 }
 
 SplayTree::SplayTree(Node* root) {
-    this->root = root;
+    _root = root;
     if(root) {
         root->treePtr = this;
     }
 }
 
 SplayTree::~SplayTree() {
-    if(root) {
-        root->recursiveDelete();
-    }
+    Node::recursiveDelete(_root);
 }
 
-void SplayTree::setParent(Node* vertex, Node* parent) {
+void SplayTree::_setParent(Node* vertex, Node* parent) {
     if(vertex) {
         vertex->parent = parent;
     }
 }
 
-size_t getSize(Node* vertex) {
-    if(vertex) {
-        return vertex->sizeOfSubtree;
-    }
-    return 0;
+inline size_t Node::getSize(Node* vertex) {
+    return (vertex ? vertex->sizeOfSubtree : 0);
 }
 
-size_t getMin(Node* vertex) {
-    if(vertex) {
-        return vertex->subtreeMinWeight - vertex->removedWeightValue;
-    }
-    return INF;
+inline size_t Node::getMin(Node* vertex) {
+    return (vertex ? vertex->subtreeMinWeight - vertex->removedWeightValue : INF);
 }
 
-void updateTreeSize(Node* vertex) {
+size_t Node::getKey(Node* vertex) {
+    return (vertex ? vertex->key : INF);
+}
+
+size_t Node::getWeight(Node* vertex) {
+    return (vertex ? vertex->edgeWeight : INF);
+}
+
+
+
+void Node::updateNodeParams(Node* vertex) {
     if(vertex) {
         vertex->sizeOfSubtree = getSize(vertex->leftChild) + getSize(vertex->rightChild) + 1;
         vertex->subtreeMinWeight = min(min(getMin(vertex->leftChild), getMin(vertex->rightChild)), vertex->edgeWeight);
     }
 }
 
-void SplayTree::keepParent(Node* vertex) {
-    setParent(vertex->leftChild, vertex);
-    setParent(vertex->rightChild, vertex);
-    updateTreeSize(vertex);
-    //vertex->push();
+void SplayTree::_keepParent(Node* vertex) {
+    _setParent(vertex->leftChild, vertex);
+    _setParent(vertex->rightChild, vertex);
+    Node::updateNodeParams(vertex);
 }
 
-void SplayTree::rotate(Node* parent, Node* vertex) {
+void SplayTree::_rotate(Node* parent, Node* vertex) {
     Node* grandParent = parent->parent;
     
-    if(grandParent) {
-        grandParent->push();
-    }
-    
-    parent->push();
-    vertex->push();
+    Node::push(grandParent);
+    Node::push(parent);
+    Node::push(vertex);
     
     if(grandParent) {
         if(grandParent->leftChild == parent) {
@@ -126,64 +109,57 @@ void SplayTree::rotate(Node* parent, Node* vertex) {
         vertex->leftChild = parent;
     }
     
-    keepParent(parent);
-    keepParent(vertex);
+    _keepParent(parent);
+    _keepParent(vertex);
     
-    //updateTreeSize(vertex);
-    //updateTreeSize(grandParent);
-    
-    setParent (vertex, grandParent);
+    _setParent (vertex, grandParent);
 }
 
 void SplayTree::splay(Node* vertex){
-    if(!vertex->parent) {
-        root = vertex;
-        root->treePtr = this;
-        return;
+    while(true) {
+        if(!vertex->parent) {
+            _root = vertex;
+            _root->treePtr = this;
+            return;
+        }
+        
+        Node* parent = vertex->parent;
+        Node* grandParent = parent->parent;
+        
+        if(!grandParent) {
+            _rotate(parent, vertex);
+            _root = vertex;
+            _root->treePtr = this;
+            return;
+        }
+        
+        bool zigZigFlag = ((grandParent->leftChild == parent) == (parent->leftChild == vertex));
+        
+        if(zigZigFlag) {
+            _rotate(grandParent, parent);
+            _rotate(parent, vertex);
+        } else {
+            _rotate(parent, vertex);
+            _rotate(grandParent, vertex);
+        }
     }
-    
-    Node* parent = vertex->parent;
-    Node* grandParent = parent->parent;
-    
-    if(!grandParent) {
-        rotate(parent, vertex);
-        root = vertex;
-        root->treePtr = this;
-        return;
-    }
-    
-    //grandParent->push();
-    //parent->push();
-    //vertex->push();
-    
-    bool zigZigFlag = ((grandParent->leftChild == parent) == (parent->leftChild == vertex));
-    
-    if(zigZigFlag) {
-        rotate(grandParent, parent);
-        rotate(parent, vertex);
-    } else {
-        rotate(parent, vertex);
-        rotate(grandParent, vertex);
-    }
-    
-    splay(vertex);
-    return;
 }
 
 Node* SplayTree::find(size_t position) {
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
+    size_t treeSize = Node::getSize(_root);
     
     if(position >= treeSize) {
         return NULL;
         // throw std::out_of_range("out of range in SplayTree::find\n");
     }
     
-    return find(position, root);
+    return _find(position, _root);
 }
 
-Node* SplayTree::find(size_t position, Node* vertex) {
-    vertex->push();
-    size_t indexLeft = (vertex->leftChild ? vertex->leftChild->sizeOfSubtree : 0);
+Node* SplayTree::_find(size_t position, Node* vertex) {
+    Node::push(vertex);
+    
+    size_t indexLeft = Node::getSize(vertex->leftChild);
     
     if(position == indexLeft) {
         splay(vertex);
@@ -191,15 +167,25 @@ Node* SplayTree::find(size_t position, Node* vertex) {
     }
     
     if(position < indexLeft) {
-        return find(position, vertex->leftChild);
+        return _find(position, vertex->leftChild);
     }
     
-    return find(position - indexLeft - 1, vertex->rightChild);
+    return _find(position - indexLeft - 1, vertex->rightChild);
+}
+
+std::pair<SplayTree*, SplayTree*> SplayTree::split(SplayTree* tree,size_t position) {
+    SplayTree* leftTree = nullptr;
+    SplayTree* rightTree = nullptr;
+    if(tree) {
+        rightTree = tree->_split(position);
+        leftTree = tree;
+    }
+    return std::make_pair(leftTree, rightTree);
 }
 
 
-SplayTree* SplayTree::split(size_t position){
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
+SplayTree* SplayTree::_split(size_t position){
+    size_t treeSize = (_root ? _root->sizeOfSubtree : 0);
     
     if(position > treeSize) {
         return NULL;
@@ -210,103 +196,58 @@ SplayTree* SplayTree::split(size_t position){
         return new SplayTree(nullptr);
     }
     
-    Node* newRoot = find(position, root);
+    Node* newRoot = _find(position, _root);
     
     SplayTree* rightTree = new SplayTree(newRoot);
     
-    root = newRoot->leftChild;
+    _root = newRoot->leftChild;
     newRoot->leftChild = nullptr;
-    setParent(root, nullptr);
+    _setParent(_root, nullptr);
     
-    if(rightTree->root) {
-        rightTree->root->treePtr = rightTree;
-        rightTree->root->push();
+    if(rightTree->_root) {
+        rightTree->_root->treePtr = rightTree;
     }
     
-    if(root) {
-        root->push();
-    }
-    
-    // updateTreeSize(root);
-    //updateTreeSize(rightTree->root);
+    Node::push(rightTree->_root);
+    Node::push(_root);
     
     return rightTree;
 }
 
-void SplayTree::insert(int key, size_t position) {
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
-    
-    if(position > treeSize) {
-        return;
-        //    throw std::out_of_range("out of range in SplayTree::insert\n");
+SplayTree* SplayTree::merge(SplayTree* leftTree, SplayTree* rightTree) {
+    if(!leftTree) {
+        return rightTree;
     }
     
-    SplayTree* rightTree = split(position);
-    Node* newRoot = new Node(key);
-    newRoot->treePtr = this;
-    newRoot->leftChild = this->root;
-    newRoot->rightChild = rightTree->root;
-    root = newRoot;
-    keepParent(root);
+    leftTree->_merge(rightTree);
     
-    rightTree->root = nullptr;
-    
-    delete rightTree;
-    rightTree = nullptr;
+    return leftTree;
 }
 
-void SplayTree::merge(SplayTree* addedTree) {
-    if(!addedTree || !addedTree->root)
+void SplayTree::_merge(SplayTree* addedTree) {
+    if(!addedTree->_root)
     {
-        return;
+        delete addedTree;
+        addedTree = nullptr;
     }
     
-    if(!root) {
-        root = addedTree->root;
-        addedTree->root = nullptr;
+    
+    if(!_root) {
+        _root = addedTree->_root;
+        addedTree->_root = nullptr;
         delete addedTree;
         addedTree = nullptr;
         return;
     }
     
-    find(root->sizeOfSubtree - 1);
+    find(_root->sizeOfSubtree - 1);
     addedTree->find(0);
     
-    root->push();
+    Node::push(_root);
     
-    root->rightChild = addedTree->root;
-    addedTree->root = nullptr;
+    _root->rightChild = addedTree->_root;
+    addedTree->_root = nullptr;
     delete addedTree;
     addedTree = nullptr;
-    keepParent(root);
-}
-
-void SplayTree::remove(size_t position) {
-    size_t treeSize = (root ? root->sizeOfSubtree : 0);
-    
-    if(position >= treeSize) {
-        return;
-        //throw std::out_of_range("out of range in SplayTree::remove\n");
-    }
-    
-    find(position);
-    SplayTree* leftTree = new SplayTree(root->leftChild);
-    SplayTree* rightTree = new SplayTree(root->rightChild);
-    
-    setParent(leftTree->root, nullptr);
-    setParent(rightTree->root, nullptr);
-    leftTree->merge(rightTree);
-    
-    delete root;
-    root = leftTree->root;
-    leftTree->root = nullptr;
-    
-    if(root) {
-        root->treePtr = this;
-    }
-    
-    updateTreeSize(root);
-    
-    delete leftTree;
-    delete rightTree;
+    _keepParent(_root);
 }

@@ -14,38 +14,35 @@
 #include "splaytree.h"
 #include <map>
 
+
 class LinkCutTree {
+    friend class LinkCutBlockFlowFinder;
 private:
-    //std::vector <SplayTree>* trees;
-    //std::map <Node*, size_t> numberOfTree;
-    SplayTree* getTree(Node* vertex);
-    Node* cutout(Node* vertex);
-    Node* cleanUp(Node* vertex);
-    Node* getLca(Node* vertex1, Node* vertex2);
-    Node* findLeftestMin(size_t minValue, Node* vertex);
+    std::vector <Node> nodes;
+    
+    Node* _cutout(Node* vertex);
+    Node* _leftest(Node* vertex);
+    Node* _expose(Node* vertex);
+    Node* _cleanUp(Node* vertex);
+    Node* _liftUpToRoot(Node* vertex);   //it's splay current vertex
+    Node* _findLeftestMin(size_t minValue, Node* vertex);
 public:
     Node* lastExposed;
-    // LinkCutTree(std::vector<SplayTree>* trees);
+    LinkCutTree(size_t _size);
     ~LinkCutTree();
-    void makeTree(Node* vertex);
-    //void revert(Node* vertex);
-    void removeWeightInPath(size_t weight, Node* vertex);
-    void cut(Node* vertex, Node* parent);
-    void link(Node* treeRoot, Node* vertex);
-    void linkEdge(Node* vertex1, Node* vertex2);
-    void cutEdge(Node* vertex1, Node* vertex2);
-    void setWeight(Node* vertex, size_t weight);
-    size_t getEdgeWeight(Node* vertex);
-    size_t getDist(Node* vertex1, Node* vertex2);
-    Node* lca(Node* vertex1, Node* vertex2);
-    Node* supportRoot(Node* vertex);   //it's splay current vertex
-    Node* getMinEdge(Node* vertex);
-    Node* findRoot(Node* vertex);
-    Node* leftest(Node* root);
-    size_t dist(Node* vertex1, Node* vertex2);
-    size_t depth(Node* vertex);
     
-    Node* expose(Node* vertex);
+    void clearTrees();
+    
+    void removeWeightInPath(size_t weight, size_t ind);
+    void link(size_t indRoot, size_t indVert);
+    void cut(size_t indVert, size_t indParent);
+    void setWeight(size_t indVert, size_t weight);
+    
+    size_t getEdgeWeight(size_t indVert);
+    Node* prevInPath(size_t ind);
+    Node* getMinEdge(size_t ind);
+    Node* findRoot(size_t ind);
 };
+
 
 #endif /* linkcuttree_h */

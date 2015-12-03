@@ -563,21 +563,21 @@ public:
     ~Bfs();
     vector <bool>* used;
     vector <size_t>* dist;
+    
     queue <pair <size_t, size_t> > bfsQueue;
     
     Graph* graph;
+    
     size_t source;
     size_t sink;
-    size_t vert;
-    size_t numEdge;
-    size_t levelDist;
     DirectEdge curEdge;
     
     Network* network;
     void init(Network* network);
-    void checkOutgoingEdges();
-    void checkIncomingEdges();
-    bool run();
+    void checkOutgoingEdges(size_t vert, size_t leveldist);
+    void checkIncomingEdges(size_t vert, size_t levelDist);
+    
+    bool run();//return true if sink is available from source
 };
 
 class FlowFinder {
@@ -623,6 +623,12 @@ public:
 class LinkCutBlockFlowFinder : public BlockFlowFinder {
 private:
     //ShortPathNetwork* shortPathNetwork;
+    vector <size_t> curEdgeNumber;
+    vector <bool> edgeInsideTreeFlag;
+    void addEdge(size_t vertex, size_t nextVert, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList);
+    void removeEdge(size_t vertex, size_t prevVert, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList);
+    void decreaseWeightsInPath(Node* minEdge, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList);
+    void updateBlockFlow(vector <size_t>& flow, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList);
     LinkCutTree linkCut;
     size_t source;
     size_t sink;
@@ -795,7 +801,8 @@ void Bfs::init(Network* network) {
     this->network = network;
 }
 
-void Bfs::checkOutgoingEdges() {
+void Bfs::checkOutgoingEdges(size_t vert, size_t levelDist) {
+    size_t numEdge;
     for(size_t i = 0;i < graph->outgoingList[vert].size();++i) {
         numEdge = graph->outgoingList[vert][i];
         curEdge = (graph->edgeList)[numEdge];
@@ -807,7 +814,8 @@ void Bfs::checkOutgoingEdges() {
     }
 }
 
-void Bfs::checkIncomingEdges() {
+void Bfs::checkIncomingEdges(size_t vert, size_t levelDist) {
+    size_t numEdge;
     for(size_t i = 0;i < graph->incomingList[vert].size();++i) {
         numEdge = graph->incomingList[vert][i];
         curEdge = graph->edgeList[numEdge];
@@ -820,6 +828,8 @@ void Bfs::checkIncomingEdges() {
 }
 
 bool Bfs::run() {
+    size_t vert;
+    size_t levelDist;
     
     graph = network->graph;
     source = network->source;
@@ -840,8 +850,8 @@ bool Bfs::run() {
         
         ++levelDist;
         
-        checkOutgoingEdges();
-        checkIncomingEdges();
+        checkOutgoingEdges(vert, levelDist);
+        checkIncomingEdges(vert, levelDist);
     }
     
     return (*used)[sink];
@@ -863,9 +873,57 @@ LinkCutBlockFlowFinder::~LinkCutBlockFlowFinder() {
     //delete &linkCut;
 }
 
+void LinkCutBlockFlowFinder::addEdge(size_t vertex, size_t nextVert, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList) {
+    linkCut.setWeight(vertex, edgeList[outEdges[vertex][curEdgeNumber[vertex]]].capacity);
+    linkCut.link(vertex, nextVert);
+    linkCut.findRoot(source);
+    linkCut.setWeight(linkCut.findRoot(source)->key, INF);
+    edgeInsideTreeFlag[vertex] = true;
+}
+
+void LinkCutBlockFlowFinder::removeEdge(size_t vertex, size_t prevVert, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList) {
+    linkCut.cut(prevVert, vertex);
+    edgeList[outEdges[prevVert][curEdgeNumber[prevVert]]].capacity = linkCut.getEdgeWeight(prevVert);
+    linkCut.setWeight(prevVert, INF);
+    ++curEdgeNumber[prevVert];
+    edgeInsideTreeFlag[prevVert] = false;
+}
+
+void LinkCutBlockFlowFinder::decreaseWeightsInPath(Node* minEdge, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList) {
+    size_t minVert;
+    linkCut.removeWeightInPath(minEdge->edgeWeight, source);
+    while(linkCut.getEdgeWeight((minEdge = linkCut.getMinEdge(source))->key) == 0) {
+        minVert = minEdge->key;
+        edgeList[outEdges[minVert][curEdgeNumber[minVert]]].capacity = 0;
+        linkCut.cut(minVert, edgeList[outEdges[minVert][curEdgeNumber[minVert]]].finish);
+        linkCut.setWeight(minVert, INF);
+        ++curEdgeNumber[minVert];
+        edgeInsideTreeFlag[minVert] = false;
+        if(minVert == source) {
+            break;
+        }
+    }
+}
+
+void LinkCutBlockFlowFinder::updateBlockFlow(vector <size_t>& flow, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList) {
+    DirectEdge curEdge;
+    for(size_t i = 0;i < flow.size(); ++i) {
+        curEdge = edgeList[i];
+        if(curEdgeNumber[curEdge.start] != outEdges[curEdge.start].size()
+           && outEdges[curEdge.start][curEdgeNumber[curEdge.start]] == i && edgeInsideTreeFlag[curEdge.start]) {
+            (flow)[i] -= linkCut.getEdgeWeight(edgeList[i].start);
+        } else {
+            (flow)[i] -= edgeList[i].capacity;
+        }
+    }
+
+}
+
 void LinkCutBlockFlowFinder::findBlockFlow() {
-    vector <size_t> curEdgeNumber(shortPathNetwork->graph->sizeVert, false);
-    vector <bool> edgeInsideTreeFlag(shortPathNetwork->graph->sizeVert, false);
+    curEdgeNumber.clear();
+    edgeInsideTreeFlag.clear();
+    curEdgeNumber.resize(shortPathNetwork->graph->sizeVert, false);
+    edgeInsideTreeFlag.resize(shortPathNetwork->graph->sizeVert, false);
     vector <vector <size_t> >& outEdges = shortPathNetwork->graph->outgoingList;
     vector <DirectEdge>& edgeList = shortPathNetwork->graph->edgeList;
     vector <size_t>& flow = shortPathNetwork->flow;
@@ -885,54 +943,27 @@ void LinkCutBlockFlowFinder::findBlockFlow() {
             if(curEdgeNumber[vertex] != outEdges[vertex].size()) {
                 nextVert = edgeList[outEdges[vertex][curEdgeNumber[vertex]]].finish;
                 
-                linkCut.setWeight(vertex, edgeList[outEdges[vertex][curEdgeNumber[vertex]]].capacity);
-                linkCut.link(vertex, nextVert);
-                linkCut.findRoot(source);
-                linkCut.setWeight(linkCut.findRoot(source)->key, INF);
-                edgeInsideTreeFlag[vertex] = true;
-                continue;
+                addEdge(vertex, nextVert, outEdges, edgeList);//Step 1
             } else {
                 if(vertex == source) {
-                    edgeInsideTreeFlag[source] = false;
+                    edgeInsideTreeFlag[source] = false;//Step 2
                     break;
                 } else {
                     prevVert = linkCut.prevInPath(source)->key;
-                    linkCut.cut(prevVert, vertex);
-                    edgeList[outEdges[prevVert][curEdgeNumber[prevVert]]].capacity = linkCut.getEdgeWeight(prevVert);
-                    linkCut.setWeight(prevVert, INF);
-                    ++curEdgeNumber[prevVert];
-                    edgeInsideTreeFlag[prevVert] = false;
+                    
+                    removeEdge(vertex, prevVert, outEdges, edgeList);//Step 3
                 }
             }
         } else {
             Node* minEdge = linkCut.getMinEdge(source);
-            size_t minVert;
-            linkCut.removeWeightInPath(minEdge->edgeWeight, source);
-            while(linkCut.getEdgeWeight((minEdge = linkCut.getMinEdge(source))->key) == 0) {
-                minVert = minEdge->key;
-                edgeList[outEdges[minVert][curEdgeNumber[minVert]]].capacity = 0;
-                linkCut.cut(minVert, edgeList[outEdges[minVert][curEdgeNumber[minVert]]].finish);
-                linkCut.setWeight(minVert, INF);
-                ++curEdgeNumber[minVert];
-                edgeInsideTreeFlag[minVert] = false;
-                if(minVert == source) {
-                    break;
-                }
-            }
+            
+            decreaseWeightsInPath(minEdge, outEdges, edgeList);//Step 4
         }
     }
     
-    DirectEdge curEdge;
-    for(size_t i = 0;i < flow.size(); ++i) {
-        curEdge = edgeList[i];
-        if(curEdgeNumber[curEdge.start] != outEdges[curEdge.start].size()
-           && outEdges[curEdge.start][curEdgeNumber[curEdge.start]] == i && edgeInsideTreeFlag[curEdge.start]) {
-            (flow)[i] -= linkCut.getEdgeWeight(edgeList[i].start);
-        } else {
-            (flow)[i] -= edgeList[i].capacity;
-        }
+    updateBlockFlow(flow, outEdges, edgeList);
+    
     }
-}
 
 //**********************************************************************************************
 
@@ -943,14 +974,14 @@ int main() {
     ios_base::sync_with_stdio(false);
     
     //freopen("output.txt", "w", stdout);
-    while(1) {
+    //while(1) {
         solve();
-    }
+    //}
     return 0;
 }
 
 void solve() {
-    freopen("input.txt", "r", stdin);
+    //freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
     long long vert, edge, to, from, capacity;
     vector <DirectEdge> edgeList;// = *(new vector <DirectEdge>);
@@ -984,8 +1015,8 @@ void solve() {
     //delete graph;
     //delete graph;
     
-    //    for(size_t i = 0;i < network.flow->size(); ++i) {
-    //        cout << (*network.flow)[i] << endl;
-    //    }
+        for(size_t i = 0;i < network.flow.size(); ++i) {
+            cout << network.flow[i] << endl;
+        }
 }
 

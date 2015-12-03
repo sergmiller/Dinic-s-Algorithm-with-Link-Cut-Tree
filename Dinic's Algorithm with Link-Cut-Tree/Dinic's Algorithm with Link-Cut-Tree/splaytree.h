@@ -10,62 +10,71 @@
 #define splaytree_h
 
 #include <cstdio>
+#include <vector>
+
+using std::min;
 
 class Node;
 class SplayTree;
 
 const size_t INF = 1e16;
 
-size_t getSize(Node* vertex);
-size_t getMin(Node* vertex);
-size_t getSum(Node* vertex);
-void removeWeight(size_t value, Node* vertex);
-void updateTreeSize(Node* vertex);
-
-
 class Node{
+    friend class SplayTree;
+    friend class LinkCutTree;
 public:
+    static void removeWeight(size_t value, Node* vertex);
+    static void updateNodeParams(Node* vertex);
+    static void recursiveDelete(Node* vertex);
+    static void push(Node* vertex);
+    
+    static size_t getSize(Node* vertex);
+    static size_t getMin(Node* vertex);
+    static size_t getSum(Node* vertex);
+    static size_t getKey(Node* vertex);
+    static size_t getWeight(Node* vertex);
+    
     Node(size_t key, size_t weight = 0);
+private:
     size_t key;
     size_t edgeWeight;
+    size_t sizeOfSubtree;
     size_t subtreeMinWeight;
     size_t removedWeightValue;
-    size_t sizeOfSubtree;
-    //bool reverseFlag;
+    
     Node* leftChild;
     Node* rightChild;
     Node* parent;
     Node* link;
-    SplayTree* treePtr;
     
-    void push();
-    //void reverse();
-    //void removeValue(size_t value, Node* vertex);
-    //void reverse(Node* vertex);
-    void recursiveDelete();
+    SplayTree* treePtr;
 };
 
 class SplayTree
 {
+    friend class LinkCutTree;
 private:
-    Node* find(size_t position, Node* vertex);
-    void keepParent(Node* vertex);
-    void setParent(Node* parent, Node* vertex);
-    void rotate(Node* parent, Node* vertex);
+    Node* _find(size_t position, Node* vertex);
+    void _keepParent(Node* vertex);
+    void _setParent(Node* parent, Node* vertex);
+    void _rotate(Node* parent, Node* vertex);
+    void _merge(SplayTree* addedTree); //added tree is right merged tree
+    SplayTree* _split(size_t position); //returned tree is tight splited tree
+    
+    Node* _root;
 public:
-    Node* root;
     SplayTree(Node* root);
     ~SplayTree();
     
-    void insert(int key, size_t position);
-    void remove(size_t position);
-    void merge(SplayTree* addedTree); //added tree is right merged tree
-    SplayTree* split(size_t position); //returned tree is tight splited tree
     Node* find(size_t position);
+    
+    static SplayTree* merge(SplayTree* leftTree, SplayTree* rightTree);
+    static std::pair<SplayTree*, SplayTree*> split(SplayTree* tree,size_t position);
     
     void splay(Node* vertex);
     
-    Node* getRoot() { return root; };
+    Node* getRoot() { return _root; };
 };
+
 
 #endif /* splaytree_h */

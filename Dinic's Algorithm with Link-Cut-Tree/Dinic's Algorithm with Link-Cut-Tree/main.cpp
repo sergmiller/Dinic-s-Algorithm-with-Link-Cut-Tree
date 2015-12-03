@@ -25,50 +25,43 @@ void linkCutTest();
 
 int main() {
     ios_base::sync_with_stdio(false);
-    while(1) {
+    //while(1) {
     freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
+    //freopen("output.txt", "w", stdout);
         solve();
-   }
-    //linkCutTest();
-    cout << "aaa" << endl;
+   //}
     return 0;
 }
 
 void solve() {
+    //freopen("input.txt", "r", stdin);
+    // freopen("output.txt", "w", stdout);
     long long vert, edge, to, from, capacity;
-    vector <DirectEdge>* edgeList = new vector <DirectEdge>;
+    vector <DirectEdge> edgeList;// = *(new vector <DirectEdge>);
     DirectEdge curEdge;
     cin >> vert >> edge;
+    edgeList.resize(edge);
     // scanf("%lld%lld",&vert,&edge);
-    //cout << "OK" << endl;
     for(int i = 0;i < edge;++i) {
         cin >> to >> from >> capacity;
-        //     scanf("%lld%lld%lld",&to,&from,&capacity);
         --to;
         --from;
         curEdge.start = to;
         curEdge.finish = from;
         curEdge.capacity = capacity;
-        edgeList->push_back(curEdge);
+        edgeList[i] = curEdge;
     }
     
-    //cout <<"OK" << endl;
-    
-    //Graph graph(vert, edgeList);
-    LinkCutBlockFlowFinder linkCutBlockflowFinder;
+    Graph* graph = new Graph(vert, edgeList);
+    LinkCutBlockFlowFinder linkCutBlockflowFinder(vert, 0, vert - 1);
     DinicFlowFinder dinicFlowFinder(&linkCutBlockflowFinder);
-    Network network(new Graph(vert,*edgeList), 0, vert - 1);
-    double clock7 = clock();
+    Network network(graph, 0, vert - 1);
     network.getMaxFlow(dinicFlowFinder);
-    std::cout << "end: " << (clock() - clock7)/CLOCKS_PER_SEC << std::endl;
-    std::cout << "sum: " << dinicFlowFinder.sumTime << std::endl;
+    cout << network.maxFlow << endl;
+    //delete graph;
+    //delete graph;
     
-    //cout << "OK" << endl;
-    
-    cout << dinicFlowFinder.maxFlow << endl;
-    
-    for(size_t i = 0;i < network.flow->size(); ++i) {
-        cout << (*network.flow)[i] << endl;
-    }
+//    for(size_t i = 0;i < network.flow.size(); ++i) {
+//        cout << network.flow[i] << endl;
+//    }
 }
