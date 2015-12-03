@@ -38,21 +38,21 @@ Graph::~Graph()
 }
 
 
-Network::Network(Graph *graph, size_t source, size_t sink): graph(graph), sink(sink), source(source), maxFlow(0)
+Network::Network(Graph *graph, size_t source, size_t sink): _graph(graph), sink(sink), source(source), _maxFlow(0)
 {
-    flow.resize(graph->sizeEdge, 0);
+    _flow.resize(graph->sizeEdge, 0);
 }
 
 Network::~Network()
 {
-    delete graph;
+    delete _graph;
     //delete flow;
 }
 
 size_t Network::getMaxFlow(FlowFinder& flowFinder) {
     flowFinder.initFlowFinder(this);
     flowFinder.getMaxFlow();
-    return maxFlow = flowFinder.maxFlow;
+    return _maxFlow = flowFinder.maxFlow;
 }
 
 DinicFlowFinder::DinicFlowFinder(BlockFlowFinder* blockFlowFinder): blockFlowFinder(blockFlowFinder), shortPathNetwork(nullptr)
@@ -69,8 +69,8 @@ void DinicFlowFinder::initFlowFinder(Network* network) {
 }
 
 void DinicFlowFinder::calcMaxFlow() {
-    vector <DirectEdge>& edgeList = network->graph->edgeList;
-    vector <size_t>& flow = network->flow;
+    vector <DirectEdge>& edgeList = network->graph()->edgeList;
+    vector <size_t>& flow = network->flow();
     size_t source = network->source;
     
     for(size_t i = 0;i < edgeList.size(); ++i) {
@@ -86,16 +86,18 @@ void DinicFlowFinder::calcMaxFlow() {
 void DinicFlowFinder::updateFlow() {
     DirectEdge originalEdge;
     DirectEdge imageEdge;
-    vector <DirectEdge>& originEdgeList = network->graph->edgeList;
-    vector <DirectEdge>& shortPathEdgeList = shortPathNetwork->graph->edgeList;
+    vector <DirectEdge>& originEdgeList = network->graph()->edgeList;
+    vector <DirectEdge>& shortPathEdgeList = shortPathNetwork->graph()->edgeList;
+    vector <size_t>& networkFlow = network->flow();
+    vector <size_t>& shortPathNetworkFlow = shortPathNetwork->flow();
     
     for(size_t i = 0;i < shortPathNetwork->edgeID.size(); ++i) {
         originalEdge = originEdgeList[shortPathNetwork->edgeID[i]];
         imageEdge = shortPathEdgeList[i];
         if(originalEdge.start == imageEdge.start) {
-            network->flow[shortPathNetwork->edgeID[i]] += shortPathNetwork->flow[i];
+            networkFlow[shortPathNetwork->edgeID[i]] += shortPathNetworkFlow[i];
         } else {
-            network->flow[shortPathNetwork->edgeID[i]] -= shortPathNetwork->flow[i];
+            networkFlow[shortPathNetwork->edgeID[i]] -= shortPathNetworkFlow[i];
         }
     }
 }
@@ -125,7 +127,7 @@ bool DinicFlowFinder::getShortPathNetwork() {
     }
     
     DirectEdge curEdge;
-    vector <DirectEdge>& edgeList = network->graph->edgeList;
+    vector <DirectEdge>& edgeList = network->graph()->edgeList;
     for(size_t i = 0;i < edgeList.size(); ++i) {
         curEdge = edgeList[i];
         if(checkEdgeForShortPath(i, curEdge)) {
@@ -134,20 +136,20 @@ bool DinicFlowFinder::getShortPathNetwork() {
         }
     }
     
-    shortPathNetwork = new ShortPathNetwork(new Graph(network->graph->sizeVert, shortPathEdges),
+    shortPathNetwork = new ShortPathNetwork(new Graph(network->graph()->sizeVert, shortPathEdges),
                                             network->source, network->sink, *edgeID);
     return true;
 }
 
 bool DinicFlowFinder::checkEdgeForShortPath(size_t edgeNumber, DirectEdge& edge) {
-    if((*bfs.dist)[edge.start] + 1 == (*bfs.dist)[edge.finish] && network->flow[edgeNumber] < edge.capacity && edge.start != network->sink) {
-        edge.capacity -= network->flow[edgeNumber];
+    if((*bfs.dist)[edge.start] + 1 == (*bfs.dist)[edge.finish] && network->flow()[edgeNumber] < edge.capacity && edge.start != network->sink) {
+        edge.capacity -= network->flow()[edgeNumber];
         return true;
     }
     
-    if((*bfs.dist)[edge.finish] + 1 == (*bfs.dist)[edge.start] &&  network->flow[edgeNumber] > 0 && edge.finish != network->sink) {
+    if((*bfs.dist)[edge.finish] + 1 == (*bfs.dist)[edge.start] &&  network->flow()[edgeNumber] > 0 && edge.finish != network->sink) {
         std::swap(edge.start, edge.finish);
-        edge.capacity = network->flow[edgeNumber];
+        edge.capacity = network->flow()[edgeNumber];
         return true;
     }
     
@@ -165,7 +167,7 @@ Bfs::~Bfs() {
 }
 
 void Bfs::init(Network* network) {
-    size_t sizeVert = network->graph->sizeVert;
+    size_t sizeVert = network->graph()->sizeVert;
     if(!used) {
         used = new vector <bool> (sizeVert);
         dist = new vector <size_t> (sizeVert);
@@ -182,10 +184,11 @@ void Bfs::init(Network* network) {
 
 void Bfs::checkOutgoingEdges(size_t vert, size_t levelDist) {
     size_t numEdge;
+    vector <size_t>& flow = network->flow();
     for(size_t i = 0;i < graph->outgoingList[vert].size();++i) {
         numEdge = graph->outgoingList[vert][i];
         curEdge = (graph->edgeList)[numEdge];
-        if(!(*used)[curEdge.finish] && network->flow[numEdge] < curEdge.capacity) {
+        if(!(*used)[curEdge.finish] && flow[numEdge] < curEdge.capacity) {
             (*used)[curEdge.finish] = true;
             (*dist)[curEdge.finish] = levelDist;
             bfsQueue.push(std::make_pair(curEdge.finish, levelDist));
@@ -195,10 +198,11 @@ void Bfs::checkOutgoingEdges(size_t vert, size_t levelDist) {
 
 void Bfs::checkIncomingEdges(size_t vert, size_t levelDist) {
     size_t numEdge;
+    vector <size_t>& flow = network->flow();
     for(size_t i = 0;i < graph->incomingList[vert].size();++i) {
         numEdge = graph->incomingList[vert][i];
         curEdge = graph->edgeList[numEdge];
-        if(!(*used)[curEdge.start] && network->flow[numEdge] > 0) {
+        if(!(*used)[curEdge.start] && flow[numEdge] > 0) {
             (*used)[curEdge.start] = true;
             (*dist)[curEdge.start] = levelDist;
             bfsQueue.push(std::make_pair(curEdge.start, levelDist));
@@ -210,7 +214,7 @@ bool Bfs::run() {
     size_t vert;
     size_t levelDist;
     
-    graph = network->graph;
+    graph = network->graph();
     source = network->source;
     sink = network->sink;
     
@@ -301,11 +305,11 @@ void LinkCutBlockFlowFinder::updateBlockFlow(vector <size_t>& flow, vector <vect
 void LinkCutBlockFlowFinder::findBlockFlow() {
     curEdgeNumber.clear();
     edgeInsideTreeFlag.clear();
-    curEdgeNumber.resize(shortPathNetwork->graph->sizeVert, false);
-    edgeInsideTreeFlag.resize(shortPathNetwork->graph->sizeVert, false);
-    vector <vector <size_t> >& outEdges = shortPathNetwork->graph->outgoingList;
-    vector <DirectEdge>& edgeList = shortPathNetwork->graph->edgeList;
-    vector <size_t>& flow = shortPathNetwork->flow;
+    curEdgeNumber.resize(shortPathNetwork->graph()->sizeVert, false);
+    edgeInsideTreeFlag.resize(shortPathNetwork->graph()->sizeVert, false);
+    vector <vector <size_t> >& outEdges = shortPathNetwork->graph()->outgoingList;
+    vector <DirectEdge>& edgeList = shortPathNetwork->graph()->edgeList;
+    vector <size_t>& flow = shortPathNetwork->flow();
     
     size_t vertex;
     size_t nextVert;

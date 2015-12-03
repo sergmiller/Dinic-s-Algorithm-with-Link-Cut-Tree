@@ -57,7 +57,7 @@ void solve() {
     DinicFlowFinder dinicFlowFinder(&linkCutBlockflowFinder);
     Network network(graph, 0, vert - 1);
     network.getMaxFlow(dinicFlowFinder);
-    cout << network.maxFlow << endl;
+    cout << network.maxFlow() << endl;
     //delete graph;
     //delete graph;
     

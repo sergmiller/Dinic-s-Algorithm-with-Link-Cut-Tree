@@ -45,22 +45,24 @@ public:
     size_t sizeVert; //total quantity of verticies and edges
     size_t sizeEdge;
     Graph(size_t vertices, vector <DirectEdge>& edges);  //get graph from list pairs of vertices
-    
     ~Graph();
 };
 
 class Network
 {
-public:
-    long long maxFlow;
-    vector <size_t> flow;  //current flow in each edge
-    size_t source;    //source and sink in Network
-    size_t sink;
-    Graph *graph;
+    friend class FlowFinder;
+    Graph *_graph;
+    long long _maxFlow;
+    vector <size_t> _flow;  //current flow in each edge
+    public:
+    const size_t source;    //source and sink in Network
+    const size_t sink;
     Network(Graph *graph, size_t source, size_t sink);
     ~Network();
     size_t getMaxFlow(FlowFinder& flowFinder);   //workfunction
-    
+    long long maxFlow() { return _maxFlow; };
+    vector <size_t>& flow() { return _flow; };
+    Graph* graph() {return _graph;}
 };
 
 class Bfs{
@@ -90,7 +92,6 @@ class FlowFinder {
 public:
     long long maxFlow;
     Network* network;
-    //virtual ~FlowFinder() = 0;
     virtual void initFlowFinder(Network* network) = 0;
     virtual void getMaxFlow() = 0;
 };
@@ -99,9 +100,6 @@ class DinicFlowFinder : public FlowFinder {
 private:
     ShortPathNetwork* shortPathNetwork;
     BlockFlowFinder* blockFlowFinder;
-public:
-    DinicFlowFinder(BlockFlowFinder* blockFlowFinder);
-    ~DinicFlowFinder();
     void getMaxFlow();
     void updateFlow();
     void calcMaxFlow();
@@ -109,6 +107,9 @@ public:
     bool getShortPathNetwork();
     bool checkEdgeForShortPath(size_t edgeNumber, DirectEdge& edge);
     Bfs bfs;
+public:
+    DinicFlowFinder(BlockFlowFinder* blockFlowFinder);
+    ~DinicFlowFinder();
 };
 
 class ShortPathNetwork : public Network{
@@ -121,14 +122,12 @@ public:
 
 class BlockFlowFinder {
 public:
-    //virtual ~BlockFlowFinder() = 0;
     ShortPathNetwork* shortPathNetwork;
     virtual void findBlockFlow() = 0;
 };
 
 class LinkCutBlockFlowFinder : public BlockFlowFinder {
 private:
-    //ShortPathNetwork* shortPathNetwork;
     vector <size_t> curEdgeNumber;
     vector <bool> edgeInsideTreeFlag;
     void addEdge(size_t vertex, size_t nextVert, vector <vector <size_t> >& outEdges, vector <DirectEdge>& edgeList);
