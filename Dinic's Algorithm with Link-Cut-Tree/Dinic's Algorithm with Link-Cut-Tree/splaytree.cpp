@@ -62,18 +62,16 @@ SplayTree::~SplayTree() {
     Node::recursiveDelete(_root);
 }
 
-void SplayTree::_setParent(Node* vertex, Node* parent) {
-    if(vertex) {
-        vertex->parent = parent;
-    }
-}
-
 inline size_t Node::getSize(Node* vertex) {
     return (vertex ? vertex->sizeOfSubtree : 0);
 }
 
 inline size_t Node::getMin(Node* vertex) {
     return (vertex ? vertex->subtreeMinWeight - vertex->removedWeightValue : INF);
+}
+
+inline size_t Node::getMax(Node* vertex) {
+    return (vertex ? vertex->subtreeMaxWeight - vertex->removedWeightValue : 0);
 }
 
 size_t Node::getKey(Node* vertex) {
@@ -84,12 +82,23 @@ size_t Node::getWeight(Node* vertex) {
     return (vertex ? vertex->edgeWeight : INF);
 }
 
+size_t Node::getSubtreeWeight(Node* vertex) {
+    return (vertex ? vertex->subtreeWeight - vertex->removedWeightValue * vertex->sizeOfSubtree : 0);
+}
 
 
 void Node::updateNodeParams(Node* vertex) {
     if(vertex) {
         vertex->sizeOfSubtree = getSize(vertex->leftChild) + getSize(vertex->rightChild) + 1;
+        vertex->subtreeWeight = getSubtreeWeight(vertex->leftChild) + getSubtreeWeight(vertex->rightChild) + vertex->edgeWeight;
+        vertex->subtreeMaxWeight = max(max(getMax(vertex->leftChild), getMax(vertex->rightChild)), vertex->edgeWeight);
         vertex->subtreeMinWeight = min(min(getMin(vertex->leftChild), getMin(vertex->rightChild)), vertex->edgeWeight);
+    }
+}
+
+void SplayTree::_setParent(Node* vertex, Node* parent) {
+    if(vertex) {
+        vertex->parent = parent;
     }
 }
 
@@ -263,4 +272,26 @@ void SplayTree::_merge(SplayTree* addedTree) {
     delete addedTree;
     addedTree = nullptr;
     _keepParent(_root);
+}
+
+void SplayTree::insert(int key, int position) {
+    size_t treeSize = (_root ? _root->sizeOfSubtree : 0);
+    
+    if(position > treeSize) {
+        return;
+        // throw std::out_of_range("out of range in SplayTree::insert\n");
+    }
+    
+    SplayTree* rightTree = _split(position);
+    Node* newRoot = new Node(key);
+    newRoot->leftChild = _root;
+    newRoot->rightChild = rightTree->_root;
+    _root = newRoot;
+    _keepParent(_root);
+    
+    Node::updateNodeParams(_root);
+    
+    rightTree->_root = NULL;
+    
+    rightTree->~SplayTree();
 }

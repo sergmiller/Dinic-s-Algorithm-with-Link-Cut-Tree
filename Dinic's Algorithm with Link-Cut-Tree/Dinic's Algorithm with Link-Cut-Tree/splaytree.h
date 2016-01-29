@@ -13,6 +13,7 @@
 #include <vector>
 
 using std::min;
+using std::max;
 
 class Node;
 class SplayTree;
@@ -31,9 +32,11 @@ public:
     
     static size_t getSize(Node* vertex);
     static size_t getMin(Node* vertex);
+    static size_t getMax(Node* vertex);
     static size_t getSum(Node* vertex);
     static size_t getKey(Node* vertex);
     static size_t getWeight(Node* vertex);
+    static size_t getSubtreeWeight(Node* vertex);
     
     Node(size_t key, size_t weight = 0);
 private:
