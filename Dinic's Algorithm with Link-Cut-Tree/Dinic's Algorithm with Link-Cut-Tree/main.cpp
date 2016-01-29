@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  Dinic's Alogorithm with Link-Cut-Tree
+//  Dinic's Algorithm with Link-Cut-Tree
 //
 //  Created by Сергей Миллер on 10.10.15.
 //  Copyright © 2015 Сергей Миллер. All rights reserved.
@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <ctime>
 #include <queue>
 #include <algorithm>
 #include "splaytree.h"
@@ -20,7 +21,7 @@ using namespace std;
 
 //**********************************************************************************************
 
-void solve();
+void solveDinicMaxFlow();
 void linkCutTest();
 
 int main() {
@@ -28,17 +29,18 @@ int main() {
     //while(1) {
     freopen("input.txt", "r", stdin);
     //freopen("output.txt", "w", stdout);
-        solve();
+        solveDinicMaxFlow();
    //}
     return 0;
 }
 
-void solve() {
+void solveDinicMaxFlow() {
     //freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
     long long vert, edge, to, from, capacity;
     vector <DirectEdge> edgeList;// = *(new vector <DirectEdge>);
     DirectEdge curEdge;
+    double t = clock();
     cin >> vert >> edge;
     edgeList.resize(edge);
     // scanf("%lld%lld",&vert,&edge);
@@ -58,6 +60,7 @@ void solve() {
     Network network(graph, 0, vert - 1);
     network.getMaxFlow(dinicFlowFinder);
     cout << network.maxFlow() << endl;
+    cout << "time: " << (clock() - t)/CLOCKS_PER_SEC << endl;
     //delete graph;
     //delete graph;
     

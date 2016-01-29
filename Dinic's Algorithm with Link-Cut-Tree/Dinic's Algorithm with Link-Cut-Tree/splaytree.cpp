@@ -1,6 +1,6 @@
 //
 //  splaytree.cpp
-//  Dinic's Alogorithm with Link-Cut-Tree
+//  Dinic's Algorithm with Link-Cut-Tree
 //
 //  Created by Сергей Миллер on 10.10.15.
 //  Copyright © 2015 Сергей Миллер. All rights reserved.
@@ -11,7 +11,7 @@
 #include <vector>
 
 
-Node::Node(size_t key, size_t edgeWeight):key(key), sizeOfSubtree(1), leftChild(nullptr), rightChild(nullptr), parent(nullptr), link(nullptr), subtreeMinWeight(edgeWeight), removedWeightValue(0), treePtr(nullptr), edgeWeight(edgeWeight) {
+Node::Node(size_t key, size_t edgeWeight):key(key), sizeOfSubtree(1), leftChild(nullptr), rightChild(nullptr), parent(nullptr), link(nullptr), subtreeMinWeight(edgeWeight), subtreeMaxWeight(edgeWeight), removedWeightValue(0), treePtr(nullptr), edgeWeight(edgeWeight), subtreeWeight(edgeWeight), reverseFlag(false) {
 }
 
 void Node::recursiveDelete(Node* vertex) {
@@ -28,6 +28,12 @@ void Node::removeWeight(size_t value, Node* vertex) {
     }
 }
 
+void Node::reverse(Node* vertex) {
+    if(vertex) {
+        vertex->reverseFlag ^= true;
+    }
+}
+
 void Node::push(Node* vertex) {
     if(vertex) {
         vertex->edgeWeight -= vertex->removedWeightValue;
@@ -35,6 +41,13 @@ void Node::push(Node* vertex) {
         Node::removeWeight(vertex->removedWeightValue, vertex->rightChild);
         vertex->removedWeightValue = 0;
         Node::updateNodeParams(vertex);
+        if(vertex->reverseFlag) { //guarantee that this != NULL
+            std::swap(vertex->leftChild, vertex->rightChild);
+            vertex->reverseFlag = false;
+            
+            Node::reverse(vertex->leftChild);
+            Node::reverse(vertex->rightChild);
+        }
     }
 }
 

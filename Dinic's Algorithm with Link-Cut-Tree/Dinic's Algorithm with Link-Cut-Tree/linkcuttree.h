@@ -1,6 +1,6 @@
 //
 //  linkcuttree.h
-//  Dinic's Alogorithm with Link-Cut-Tree
+//  Dinic's Algorithm with Link-Cut-Tree
 //
 //  Created by Сергей Миллер on 12.10.15.
 //  Copyright © 2015 Сергей Миллер. All rights reserved.

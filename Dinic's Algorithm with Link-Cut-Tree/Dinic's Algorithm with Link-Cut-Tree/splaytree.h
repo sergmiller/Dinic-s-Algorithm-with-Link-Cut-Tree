@@ -1,6 +1,6 @@
 //
 //  splaytree.h
-//  Dinic's Alogorithm with Link-Cut-Tree
+//  Dinic's Algorithm with Link-Cut-Tree
 //
 //  Created by Сергей Миллер on 10.10.15.
 //  Copyright © 2015 Сергей Миллер. All rights reserved.
@@ -27,6 +27,7 @@ public:
     static void updateNodeParams(Node* vertex);
     static void recursiveDelete(Node* vertex);
     static void push(Node* vertex);
+    static void reverse(Node* vertex);
     
     static size_t getSize(Node* vertex);
     static size_t getMin(Node* vertex);
@@ -38,9 +39,13 @@ public:
 private:
     size_t key;
     size_t edgeWeight;
+    size_t subtreeWeight;
     size_t sizeOfSubtree;
+    size_t subtreeMaxWeight;
     size_t subtreeMinWeight;
     size_t removedWeightValue;
+    
+    bool reverseFlag;
     
     Node* leftChild;
     Node* rightChild;
@@ -55,6 +60,8 @@ class SplayTree
     friend class LinkCutTree;
 private:
     Node* _find(size_t position, Node* vertex);
+    void insert(int key, int position);
+    void remove(int position);
     void _keepParent(Node* vertex);
     void _setParent(Node* parent, Node* vertex);
     void _rotate(Node* parent, Node* vertex);
