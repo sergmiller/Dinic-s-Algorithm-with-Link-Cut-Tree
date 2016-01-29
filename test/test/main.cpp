@@ -11,6 +11,7 @@
 #include <fstream>
 #include <vector>
 #include <cstdlib>
+#include <ctime>
 #include <queue>
 #include <algorithm>
 #include <cassert>
@@ -402,9 +403,7 @@ void LinkCutTree::cut(size_t indVert, size_t indParent) {
 
 Node* LinkCutTree::findRoot(size_t ind) {
     Node* vertex = &nodes[ind];
-    if(vertex != lastExposed) {
-        _expose(vertex);
-    }
+    _expose(vertex);
     return _leftest(_liftUpToRoot(vertex));
 }
 
@@ -453,7 +452,6 @@ Node* LinkCutTree::_cutout(Node* vertex) {
 }
 
 Node* LinkCutTree::_expose(Node* vertex) {
-    lastExposed = vertex;
     Node* next;
     vertex = _leftest(_liftUpToRoot(_cutout(vertex)));
     while(vertex->link != nullptr) {
@@ -967,22 +965,25 @@ void LinkCutBlockFlowFinder::findBlockFlow() {
 
 //**********************************************************************************************
 
-void solve();
+void solveDinicMaxFlow();
 void linkCutTest();
 
 int main() {
     ios_base::sync_with_stdio(false);
-    
+    freopen("input.txt", "r", stdin);
     //freopen("output.txt", "w", stdout);
     //while(1) {
-        solve();
+    solveDinicMaxFlow();
     //}
     return 0;
 }
 
-void solve() {
-    //freopen("input.txt", "r", stdin);
+void solveDinicMaxFlow() {
+   // freopen("input.txt", "r", stdin);
+    //double startTime = clock();
     // freopen("output.txt", "w", stdout);
+
+    
     long long vert, edge, to, from, capacity;
     vector <DirectEdge> edgeList;// = *(new vector <DirectEdge>);
     DirectEdge curEdge;
@@ -999,24 +1000,15 @@ void solve() {
         edgeList[i] = curEdge;
     }
     
-    //Graph graph(vert, edgeList);
-    //LinkCutBlockFlowFinder* linkCutBlockFlowFinder = new LinkCutBlockFlowFinder(vert, 0, vert - 1);
-    //dinicFlowFinder(new LinkCutBlockFlowFinder(vert, 0, vert - 1));
-    //    Network network(new Graph(vert,edgeList), 0, vert - 1);
-    //    network.getMaxFlow(*(new DinicFlowFinder(new LinkCutBlockFlowFinder(vert, 0, vert - 1))));
-    //
-    //
     Graph* graph = new Graph(vert, edgeList);
     LinkCutBlockFlowFinder linkCutBlockflowFinder(vert, 0, vert - 1);
     DinicFlowFinder dinicFlowFinder(&linkCutBlockflowFinder);
     Network network(graph, 0, vert - 1);
     network.getMaxFlow(dinicFlowFinder);
     cout << network.maxFlow << endl;
-    //delete graph;
-    //delete graph;
     
-        for(size_t i = 0;i < network.flow.size(); ++i) {
-            cout << network.flow[i] << endl;
-        }
+    // for(size_t i = 0;i < network.flow.size(); ++i) {
+    //     cout << network.flow[i] << endl;
+    // }
 }
 
